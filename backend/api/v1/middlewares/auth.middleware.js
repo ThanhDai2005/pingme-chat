@@ -37,9 +37,9 @@ export const requireAuth = async (req, res, next) => {
           });
         }
 
-        req.userDetail = userDetail;
+        req.user = userDetail;
         next();
-      }
+      },
     );
   } catch (error) {
     console.log("Lỗi khi xác minh JWT trong authMiddleware", error);

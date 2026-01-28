@@ -1,0 +1,387 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Moji",
+    "version": "1.0.0",
+    "description": "API documentation cho hệ thống chat"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Sign up",
+        "tags": ["auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password", "email"],
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" },
+                  "email": { "type": "string", "format": "email" },
+                  "firstName": { "type": "string" },
+                  "lastName": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Đăng ký thành công" },
+          "400": { "description": "Dữ liệu không hợp lệ" },
+          "409": { "description": "User đã tồn tại" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/auth/signin": {
+      "post": {
+        "summary": "Sign in",
+        "tags": ["auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": { "type": "string" },
+                  "password": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Đăng nhập thành công" },
+          "400": { "description": "Sai dữ liệu" },
+          "401": { "description": "Sai tài khoản hoặc mật khẩu" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/auth/signout": {
+      "post": {
+        "summary": "Sign out",
+        "tags": ["auth"],
+        "responses": {
+          "200": { "description": "Logout thành công" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/auth/refresh": {
+      "post": {
+        "summary": "Refresh access token",
+        "tags": ["auth"],
+        "responses": {
+          "200": { "description": "Refresh token thành công" },
+          "401": { "description": "Refresh token không hợp lệ" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/user/detail": {
+      "get": {
+        "summary": "Get user detail",
+        "tags": ["user"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Lấy thông tin user thành công" },
+          "401": { "description": "Chưa đăng nhập" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/friend/requests": {
+      "post": {
+        "summary": "Send friend request",
+        "tags": ["friend"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["to"],
+                "properties": {
+                  "to": { "type": "string" },
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Gửi lời mời kết bạn thành công" },
+          "400": { "description": "Không thể gửi lời mời" },
+          "404": { "description": "User không tồn tại" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      },
+      "get": {
+        "summary": "Get friend requests",
+        "tags": ["friend"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Danh sách lời mời kết bạn" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/friend/requests/{requestId}/accept": {
+      "post": {
+        "summary": "Accept friend request",
+        "tags": ["friend"],
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Chấp nhận kết bạn thành công" },
+          "400": { "description": "Không có quyền" },
+          "404": { "description": "Không tìm thấy lời mời" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/friend": {
+      "get": {
+        "summary": "Get all friends",
+        "tags": ["friend"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Danh sách bạn bè" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/message/direct": {
+      "post": {
+        "summary": "Send direct message",
+        "tags": ["message"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["recipientId", "content"],
+                "properties": {
+                  "recipientId": { "type": "string" },
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Gửi tin nhắn thành công" },
+          "400": { "description": "Dữ liệu không hợp lệ" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/message/group": {
+      "post": {
+        "summary": "Send group message",
+        "tags": ["message"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["conversationId", "content"],
+                "properties": {
+                  "conversationId": { "type": "string" },
+                  "content": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Gửi tin nhắn nhóm thành công" },
+          "400": { "description": "Dữ liệu không hợp lệ" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/conversation": {
+      "post": {
+        "summary": "Create conversation",
+        "tags": ["conversation"],
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["direct", "group"]
+                  },
+                  "name": { "type": "string" },
+                  "memberIds": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Tạo conversation thành công" },
+          "400": { "description": "Dữ liệu không hợp lệ" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      },
+      "get": {
+        "summary": "Get conversations",
+        "tags": ["conversation"],
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Danh sách conversation" },
+          "500": { "description": "Lỗi hệ thống" }
+        }
+      }
+    },
+
+    "/conversation/{conversationId}/message": {
+      "get": {
+        "summary": "Get messages in a conversation (cursor pagination)",
+        "tags": ["conversation"],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "conversationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID của conversation"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "example": 20
+            },
+            "description": "Số lượng tin nhắn mỗi lần load"
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "2025-01-20T10:30:00.000Z"
+            },
+            "description": "Mốc thời gian để load tin nhắn cũ hơn"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách tin nhắn trong conversation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "_id": { "type": "string" },
+                          "conversationId": { "type": "string" },
+                          "senderId": { "type": "string" },
+                          "content": { "type": "string" },
+                          "createdAt": { "type": "string" },
+                          "updatedAt": { "type": "string" }
+                        }
+                      }
+                    },
+                    "nextCursor": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "Cursor cho lần load tiếp theo"
+                    }
+                  }
+                },
+                "example": {
+                  "messages": [
+                    {
+                      "_id": "65afc3b1a1e23a0012345678",
+                      "conversationId": "6974a94c31522516b77c3e6d",
+                      "senderId": "65afc3b1a1e23a0098765432",
+                      "content": "xin chào ae",
+                      "createdAt": "2025-01-20T10:29:00.000Z",
+                      "updatedAt": "2025-01-20T10:29:00.000Z"
+                    }
+                  ],
+                  "nextCursor": "2025-01-20T10:29:00.000Z"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa đăng nhập"
+          },
+          "404": {
+            "description": "Conversation không tồn tại"
+          },
+          "500": {
+            "description": "Lỗi hệ thống"
+          }
+        }
+      }
+    }
+  }
+}

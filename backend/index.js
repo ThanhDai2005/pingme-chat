@@ -4,6 +4,8 @@ dotenv.config();
 import connect from "./config/database.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
 import { mainV1Routes } from "./api/v1/routes/index.route.js";
 
 const app = express();
@@ -13,12 +15,14 @@ app.use(
   cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
-  })
+  }),
 );
 
 app.use(express.json());
-
 app.use(cookieParser());
+
+const swaggerDocument = JSON.parse(fs.readFileSync("./swagger.json", "utf8"));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 mainV1Routes(app);
 
