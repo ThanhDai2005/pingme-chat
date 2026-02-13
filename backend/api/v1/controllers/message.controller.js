@@ -1,6 +1,10 @@
-import { updateConversationAfterCreateMessage } from "../../../helpers/message.js";
+import {
+  emitNewMessage,
+  updateConversationAfterCreateMessage,
+} from "../../../helpers/message.js";
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
+import { io } from "../../../socket/index.js";
 
 // [GET] /api/v1/message/direct
 export const sendDirectMessage = async (req, res) => {
@@ -49,6 +53,8 @@ export const sendDirectMessage = async (req, res) => {
 
     await conversation.save();
 
+    emitNewMessage(io, conversation, message);
+
     res.status(201).json({
       message: message,
     });
@@ -83,6 +89,8 @@ export const sendGroupMessage = async (req, res) => {
     updateConversationAfterCreateMessage(conversation, message, userId);
 
     await conversation.save();
+
+    emitNewMessage(io, conversation, message);
 
     res.status(201).json({
       message: message,

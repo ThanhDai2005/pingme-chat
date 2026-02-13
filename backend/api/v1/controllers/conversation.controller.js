@@ -97,7 +97,7 @@ export const getConversation = async (req, res) => {
       .populate([
         { path: "participants.userId", select: "displayName avatarUrl" },
         { path: "seenBy", select: "displayname avatarUrl" },
-        { path: "lastMessage.senderId", select: "displayname  avatarUrl" },
+        { path: "lastMessage.senderId", select: "displayname avatarUrl" },
       ]);
 
     res.status(200).json({
@@ -146,5 +146,18 @@ export const getMessages = async (req, res) => {
     res.status(500).json({
       message: "Lỗi hệ thống",
     });
+  }
+};
+
+export const getUserConversationForSocketIo = async (userId) => {
+  try {
+    const conversation = await Conversation.find({
+      "participants.userId": userId,
+    }).select("_id");
+
+    return conversation.map((convo) => convo._id.toString());
+  } catch (error) {
+    console.log("Lỗi khi lấy getUserConversationForSocketIo", error);
+    return [];
   }
 };
