@@ -49,9 +49,9 @@ export function SignupForm({
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center gap-2">
                 <a className="inline-block mx-auto text-center" href="/">
-                  <img className="h-10" src="/logo.svg" />
+                  <img className="object-contain w-12 h-12" src="/logo.png" />
                 </a>
-                <h2 className="text-2xl font-bold">Tạo tài khoản Moji</h2>
+                <h2 className="text-2xl font-bold">Tạo tài khoản PingMe</h2>
                 <p className="text-[#6C6C93]">
                   Chào mừng bạn! Hãy đăng ký để bắt đầu!
                 </p>
@@ -91,7 +91,7 @@ export function SignupForm({
                 <Input
                   type="text"
                   id="username"
-                  placeholder="moji"
+                  placeholder="pingme"
                   {...register("username")}
                 />
                 {errors.username && (
@@ -107,7 +107,7 @@ export function SignupForm({
                 <Input
                   type="email"
                   id="email"
-                  placeholder="m@gmail.com"
+                  placeholder="me@gmail.com"
                   {...register("email")}
                 />
                 {errors.email && (
@@ -144,7 +144,7 @@ export function SignupForm({
           </form>
           <div className="relative hidden bg-muted md:block">
             <img
-              src="/placeholderSignUp.png"
+              src="/SignUp.png"
               alt="Image"
               className="absolute object-cover -translate-y-1/2 top-1/2"
             />

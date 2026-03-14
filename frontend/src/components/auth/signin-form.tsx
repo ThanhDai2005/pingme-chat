@@ -46,11 +46,15 @@ export function SignInForm({
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center gap-2">
                 <a className="inline-block mx-auto" href="/">
-                  <img src="/logo.svg" alt="" />
+                  <img
+                    className="object-contain w-12 h-12"
+                    src="/logo.png"
+                    alt=""
+                  />
                 </a>
                 <h2 className="text-2xl font-bold">Chào mừng quay lại</h2>
                 <p className="text-[#6C6C93]">
-                  Đăng nhập vào tài khoản Moji của bạn
+                  Đăng nhập vào tài khoản PingMe của bạn
                 </p>
               </div>
               <div className="flex flex-col gap-3">
@@ -63,7 +67,7 @@ export function SignInForm({
                 <Input
                   type="text"
                   id="username"
-                  placeholder="moji"
+                  placeholder="pingme"
                   {...register("username")}
                 />
                 {errors.username && (
@@ -103,7 +107,7 @@ export function SignInForm({
           </form>
           <div className="relative hidden bg-muted md:block">
             <img
-              src="/placeholder.png"
+              src="/SignIn.png"
               alt="Image"
               className="absolute object-cover -translate-y-1/2 top-1/2"
             />

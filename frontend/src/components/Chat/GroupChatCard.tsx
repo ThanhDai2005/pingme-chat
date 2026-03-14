@@ -4,7 +4,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useChatStore } from "@/stores/useChatStore";
 import GroupChatAvatar from "./GroupChatAvatar";
-import UnreadCountBadge from "./UnReadCountBadge";
+import UnreadCountBadge from "./UnreadCountBadge";
 
 const GroupChatCard = ({ item }) => {
   const user = useAuthStore((store) => store.user);
