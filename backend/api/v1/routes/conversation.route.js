@@ -10,4 +10,6 @@ router.get("/", controller.getConversation);
 
 router.get("/:conversationId/message", controller.getMessages);
 
+router.patch("/:conversationId/seen", controller.markAsSeen);
+
 export default router;

@@ -8,7 +8,7 @@ export const updateConversationAfterCreateMessage = (
     lastMessageAt: message.createdAt,
     lastMessage: {
       messageId: message._id,
-      content: message.content,
+      content: message.imgUrl ? "đã gửi 1 ảnh" : message.content,
       senderId: senderId,
       createdAt: message.createdAt,
     },
@@ -29,7 +29,7 @@ export const emitNewMessage = (io, conversation, message) => {
       _id: conversation._id,
       lastMessage: conversation.lastMessage,
       lastMessageAt: conversation.lastMessageAt,
+      unreadCounts: conversation.unreadCounts,
     },
-    unreadCounts: conversation.unreadCounts,
   });
 };

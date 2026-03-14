@@ -45,4 +45,30 @@ export const chatService = {
 
     return res.data;
   },
+
+  markAsSeen: async (conversationId: string) => {
+    const res = await api.patch(`/conversation/${conversationId}/seen`);
+
+    return res.data;
+  },
+
+  createConversation: async (
+    type: string,
+    name: string,
+    memberIds: string[],
+  ) => {
+    const res = await api.post("/conversation", {
+      type: type,
+      name: name,
+      memberIds: memberIds,
+    });
+
+    return res.data;
+  },
+
+  uploadImage: async (formData: FormData) => {
+    const res = await api.post("/message/upload", formData);
+
+    return res.data;
+  },
 };

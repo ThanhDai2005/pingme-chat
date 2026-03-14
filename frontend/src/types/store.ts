@@ -1,6 +1,6 @@
 import type { Socket } from "socket.io-client";
 import type { Conversation, Message } from "./chat";
-import type { User } from "./user";
+import type { Friend, FriendRequest, User } from "./user";
 
 export interface AuthState {
   accessToken: string | null;
@@ -42,6 +42,7 @@ export interface ChatState {
   activeConversationId: string | null;
   convoLoading: boolean;
   messageLoading: boolean;
+  loading: boolean;
   reset: () => void;
 
   setActiveConversation: (id: string | null) => void;
@@ -57,23 +58,45 @@ export interface ChatState {
     content: string,
     imgUrl?: string,
   ) => Promise<void>;
-
   addMessage: (message: Message) => Promise<void>;
-
-  updateConversation: (conversation: any) => void;
-
-  // markAsSeen: () => Promise<void>;
-  // addConvo: (convo: Conversation) => void;
-  // createConversation: (
-  //   type: "group" | "direct",
-  //   name: string,
-  //   memberIds: string[],
-  // ) => Promise<void>;
+  updateConversation: (conversation: unknown) => void;
+  markAsSeen: () => Promise<void>;
+  addConvo: (conversation: Conversation) => void;
+  createConversation: (
+    type: string,
+    name: string,
+    memberIds: string[],
+  ) => Promise<void>;
 }
 
 export interface SocketState {
   socket: Socket | null;
   onlineUsers: string[];
+  setOnlineUsers: (onlineUsers: string[]) => void;
   connectSocket: () => void;
   disconnectSocket: () => void;
+}
+
+export interface FriendState {
+  receiveList: FriendRequest[];
+  sendList: FriendRequest[];
+  friendList: Friend[];
+  loading: boolean;
+  searchUser: (username: string) => Promise<User | null>;
+  sendFriendRequest: (to: string, message?: string) => Promise<string>;
+  getFriendRequest: () => Promise<void>;
+  acceptFriendRequest: (requestId: string) => Promise<void>;
+  declineFriendRequest: (requestId: string) => Promise<void>;
+  getAllFriends: () => Promise<void>;
+}
+
+export interface UserState {
+  uploadAvatar: (formData: FormData) => Promise<void>;
+  updateInfo: (
+    displayName: string,
+    username: string,
+    email: string,
+    phone?: string,
+    bio?: string,
+  ) => Promise<void>;
 }

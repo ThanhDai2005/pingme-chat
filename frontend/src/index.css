@@ -19,15 +19,12 @@
     --popover-foreground: 240 15% 15%;
 
     /* Primary */
-    /* Tím */
-    --primary: 271 79% 47%;
-    --primary-foreground: 210 40% 96.1%; /*slate-100*/
-    /* Hồng */
-    --primary-glow: 320 100% 70%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
 
     /* Secondary - lavender */
-    --secondary: 270 50% 92%;
-    --secondary-foreground: 280 100% 40%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
 
     /* Muted */
     --muted: 260 30% 95%;
@@ -135,12 +132,11 @@
     --popover: 240 15% 12%;
     --popover-foreground: 250 100% 95%;
 
-    --primary: 280 100% 70%;
-    --primary-foreground: 240 15% 8%;
-    --primary-glow: 320 100% 80%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 270 20% 20%;
-    --secondary-foreground: 280 100% 80%;
+    --secondary: 217 32% 17%;
+    --secondary-foreground: 210 40% 98%;
 
     --muted: 240 15% 15%;
     --muted-foreground: 240 15% 70%;
@@ -362,4 +358,157 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* DARK MODE SCROLLBAR FOR EMOJI PICKER */
+.dark .EmojiPickerReact ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dark .EmojiPickerReact ::-webkit-scrollbar-track {
+  background: #1f1f23;
+}
+
+.dark .EmojiPickerReact ::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 10px;
+}
+
+.dark .EmojiPickerReact ::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+.dark .EmojiPickerReact {
+  scrollbar-color: #3f3f46 #1f1f23;
+  scrollbar-width: thin;
+}
+
+/* ============================= */
+/* MESSENGER STYLE THEME OVERRIDE */
+/* ============================= */
+
+:root {
+  /* Messenger primary blue */
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --primary-glow: 221 83% 65%;
+
+  /* Background gradient (light) */
+  --gradient-purple: radial-gradient(
+    125% 125% at 50% 10%,
+    #ffffff 40%,
+    #6366f1 100%
+  );
+
+  /* Chat bubble colors */
+  --chat-bubble-sent: 221 83% 53%;
+  --chat-bubble-sent-foreground: 0 0% 100%;
+
+  --chat-bubble-received: 0 0% 96%;
+  --chat-bubble-received-foreground: 222 47% 11%;
+
+  /* Messenger style chat gradient */
+  --gradient-chat: linear-gradient(135deg, #0a7cff, #4f46e5);
+
+  /* Accent */
+  --accent: 217 91% 60%;
+  --accent-foreground: 0 0% 100%;
+
+  /* Borders */
+  --border: 220 13% 91%;
+  --input: 220 13% 95%;
+  --ring: 221 83% 53%;
+
+  /* Messenger style shadows */
+  --shadow-soft: 0 8px 32px -8px rgba(10, 124, 255, 0.15);
+  --shadow-glow: 0 0 40px rgba(10, 124, 255, 0.35);
+  --shadow-bubble: 0 4px 20px -4px rgba(10, 124, 255, 0.25);
+}
+
+.dark {
+  /* Dark Messenger theme */
+
+  --primary: 221 83% 60%;
+  --primary-glow: 221 83% 70%;
+
+  /* Dark background gradient */
+  --gradient-purple: radial-gradient(
+    125% 125% at 50% 10%,
+    #000000 40%,
+    #0d1a36 100%
+  );
+
+  /* Chat bubbles */
+  --chat-bubble-sent: 221 83% 60%;
+  --chat-bubble-sent-foreground: 0 0% 100%;
+
+  --chat-bubble-received: 222 47% 14%;
+  --chat-bubble-received-foreground: 210 40% 96%;
+
+  /* Messenger dark gradient */
+  --gradient-chat: linear-gradient(135deg, #0a7cff, #1d4ed8);
+
+  /* Accent */
+  --accent: 217 91% 65%;
+
+  /* Borders */
+  --border: 222 30% 20%;
+  --input: 222 30% 16%;
+  --ring: 221 83% 60%;
+
+  /* Glow shadows */
+  --shadow-soft: 0 8px 32px -8px rgba(10, 124, 255, 0.25);
+  --shadow-glow: 0 0 40px rgba(10, 124, 255, 0.45);
+  --shadow-bubble: 0 4px 20px -4px rgba(10, 124, 255, 0.35);
+}
+
+/* ============================= */
+/* Messenger Glass UI */
+/* ============================= */
+
+.glass {
+  @apply border backdrop-blur-xl;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.dark .glass {
+  background: rgba(10, 20, 40, 0.6);
+}
+
+/* ============================= */
+/* Messenger Chat Bubble */
+/* ============================= */
+
+.chat-bubble-sent {
+  background: linear-gradient(135deg, #0a7cff, #2563eb);
+  color: white;
+}
+
+.chat-bubble-received {
+  background: #f1f5f9;
+}
+
+.dark .chat-bubble-received {
+  background: #1e293b;
+}
+
+/* ============================= */
+/* Messenger Online Status */
+/* ============================= */
+
+.status-online {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+}
+
+/* ============================= */
+/* Messenger Background */
+/* ============================= */
+
+.bg-messenger-background {
+  background: radial-gradient(125% 125% at 50% 10%, #ffffff 40%, #6366f1 100%);
+}
+
+.dark .bg-messenger-background {
+  background: radial-gradient(125% 125% at 50% 10%, #000000 40%, #0d1a36 100%);
 }

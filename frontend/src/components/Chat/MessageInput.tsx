@@ -1,13 +1,13 @@
 import { useAuthStore } from "@/stores/useAuthStore";
 import { useChatStore } from "@/stores/useChatStore";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ImagePlus, Send, Smile } from "lucide-react";
 import { Input } from "../ui/input";
-import Picker from "@emoji-mart/react";
-import data from "@emoji-mart/data";
+import EmojiPicker from "emoji-picker-react";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { toast } from "sonner";
+import { chatService } from "@/services/chatService";
 
 const MessageInput = ({ selectedConvo }) => {
   const { sendDirectMessage, sendGroupMessage } = useChatStore();
@@ -16,9 +16,44 @@ const MessageInput = ({ selectedConvo }) => {
   const [value, setValue] = useState("");
   const isDark = useThemeStore((state) => state.isDark);
   const [openEmoji, setOpenEmoji] = useState(false);
+  const inputRef = useRef(null);
 
-  const handleEmojiSelect = (emoji) => {
-    setValue((prev) => prev + emoji.native);
+  const handleClick = () => {
+    if (inputRef.current) {
+      inputRef.current.click();
+    }
+  };
+
+  const handleChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("imgUrl", file);
+    try {
+      const res = await chatService.uploadImage(formData);
+
+      sendImageMessage(res.imgUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sendImageMessage = async (imgUrl) => {
+    try {
+      if (selectedConvo?.type == "direct") {
+        const participant = selectedConvo?.participants.find(
+          (p) => p.userId._id != user?._id,
+        );
+
+        await sendDirectMessage(participant.userId._id, "", imgUrl);
+      } else {
+        await sendGroupMessage(selectedConvo._id, "", imgUrl);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Lỗi xảy ra khi gửi tin nhắn. Bạn hãy thử lại!");
+    }
   };
 
   const handleEnter = (e) => {
@@ -52,12 +87,15 @@ const MessageInput = ({ selectedConvo }) => {
     <>
       <div className="flex items-center gap-2 p-3 min-h-14 bg-background">
         <Button
+          onClick={handleClick}
           variant={"ghost"}
           size={"icon"}
           className="transition-all hover:bg-primary/10"
         >
           <ImagePlus className="size-4" />
         </Button>
+
+        <input onChange={handleChange} ref={inputRef} type="file" hidden />
         <div className="relative flex-1">
           <Input
             placeholder="Soạn tin nhắn ..."
@@ -86,13 +124,20 @@ const MessageInput = ({ selectedConvo }) => {
           <Send className="text-white size-4" />
         </Button>
         {openEmoji && (
-          <div className="absolute z-50 overflow-hidden shadow-xl bottom-16 right-4 max-h-80 rounded-xl">
-            <Picker
-              data={data}
-              onEmojiSelect={handleEmojiSelect}
-              theme={isDark ? "dark" : "light"}
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setOpenEmoji(false)}
             />
-          </div>
+            <div className="absolute z-50 overflow-hidden shadow-xl bottom-16 right-4 max-h-80 rounded-xl">
+              <EmojiPicker
+                onEmojiClick={(emojiData) => {
+                  setValue((prev) => prev + emojiData.emoji);
+                }}
+                theme={isDark ? "dark" : "light"}
+              />
+            </div>
+          </>
         )}
       </div>
     </>

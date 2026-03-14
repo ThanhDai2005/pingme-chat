@@ -28,6 +28,14 @@ export const initSocket = (server) => {
     const conversationIds = await getUserConversationForSocketIo(user._id);
     conversationIds.forEach((convo) => socket.join(convo));
 
+    socket.on("join-conversation", (conversationId) => {
+      socket.join(conversationId);
+    });
+
+    // Đưa user vào một "phòng riêng" mang ID của chính họ.
+    // Giúp Server có thể gửi tin nhắn/thông báo riêng cho user này từ bất cứ đâu bằng lệnh io.to(userId).
+    socket.join(user._id.toString());
+
     socket.on("disconnect", () => {
       onlineUsers.delete(user._id.toString());
       io.emit("online-users", Array.from(onlineUsers.keys()));

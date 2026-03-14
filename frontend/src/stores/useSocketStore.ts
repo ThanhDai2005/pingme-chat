@@ -10,6 +10,10 @@ export const useSocketStore = create<SocketState>((set, get) => ({
   socket: null,
   onlineUsers: [],
 
+  setOnlineUsers: (onlineUsers) => {
+    set({ onlineUsers: onlineUsers });
+  },
+
   connectSocket: () => {
     const accessToken = useAuthStore.getState().accessToken;
     const existingSocket = get().socket;
@@ -34,21 +38,39 @@ export const useSocketStore = create<SocketState>((set, get) => ({
       set({ onlineUsers: userIds });
     });
 
-    socket.on("new-message", ({ message, conversation, unreadCounts }) => {
+    socket.on("new-message", ({ message, conversation }) => {
       useChatStore.getState().addMessage(message);
 
       useChatStore.getState().updateConversation({
         _id: conversation._id,
         lastMessage: conversation.lastMessage,
         lastMessageAt: conversation.lastMessageAt,
-        unreadCounts: unreadCounts,
+        unreadCounts: conversation.unreadCounts,
       });
 
       if (
         useChatStore.getState().activeConversationId == message.conversationId
       ) {
-        // đánh dấu đã đọc
+        useChatStore.getState().markAsSeen();
       }
+    });
+
+    socket.on("read-message", ({ conversation }) => {
+      const updated = {
+        _id: conversation._id,
+        lastMessage: conversation.lastMessage,
+        lastMessageAt: conversation.lastMessageAt,
+        unreadCounts: conversation.unreadCounts,
+        seenBy: conversation.seenBy,
+      };
+
+      useChatStore.getState().updateConversation(updated);
+    });
+
+    socket.on("new-group", (conversation) => {
+      useChatStore.getState().addConvo(conversation);
+
+      socket.emit("join-conversation", conversation._id);
     });
   },
 

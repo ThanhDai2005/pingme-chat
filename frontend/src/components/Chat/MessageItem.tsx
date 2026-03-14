@@ -10,7 +10,8 @@ const MessageItem = ({
   selectedConvo,
   lastMessageStatus,
 }) => {
-  const prev = messageList[index - 1];
+  const prev =
+    index + 1 < messageList.length ? messageList[index + 1] : undefined;
 
   const chatBreak =
     index == 0 ||
@@ -24,11 +25,6 @@ const MessageItem = ({
 
   return (
     <>
-      {chatBreak && (
-        <span className="flex justify-center px-1 text-xs text-muted-foreground">
-          {formatMessageTime(new Date(mess.createdAt))}
-        </span>
-      )}
       <div
         className={`flex gap-2 message-bounce mt-1 ${mess.isOwn ? "justify-end" : "justify-start"}`}
       >
@@ -37,20 +33,29 @@ const MessageItem = ({
             {chatBreak && (
               <AvatarUser
                 type={"chat"}
-                name={participant.userId.displayName}
-                avatarUrl={participant.userId.avatarUrl ?? null}
+                name={participant?.userId.displayName}
+                avatarUrl={participant?.userId.avatarUrl ?? null}
               />
             )}
           </div>
         )}
         <div className="max-w-xs lg:max-w-md">
-          <Card
-            className={`p-3 ${mess.isOwn ? "chat-bubble-sent" : "chat-bubble-received"}`}
-          >
-            <p className="text-sm leading-relaxed wrap-break-word">
-              {mess.content}
-            </p>
-          </Card>
+          {mess.content && (
+            <Card
+              className={`p-3 ${mess.isOwn ? "chat-bubble-sent" : "chat-bubble-received"}`}
+            >
+              <p className="text-sm leading-relaxed wrap-break-word">
+                {mess.content}
+              </p>
+            </Card>
+          )}
+
+          {mess.imgUrl && (
+            <img
+              src={mess.imgUrl}
+              className="mb-2 rounded-lg cursor-pointer max-w-55 hover:opacity-90"
+            />
+          )}
 
           {/* sent / seen */}
           {mess.isOwn && mess._id == selectedConvo?.lastMessage?.messageId && (
@@ -63,6 +68,11 @@ const MessageItem = ({
           )}
         </div>
       </div>
+      {chatBreak && (
+        <span className="flex justify-center px-1 text-xs text-muted-foreground">
+          {formatMessageTime(new Date(mess.createdAt))}
+        </span>
+      )}
     </>
   );
 };

@@ -22,12 +22,13 @@ import DirectMessageList from "../Chat/DirectMessageList";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { NavUser } from "./nav-user";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useChatStore } from "@/stores/useChatStore";
+import ConversationSkeleton from "../Skeleton/ConversationSkeleton";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { isDark, toggleTheme } = useThemeStore();
   const user = useAuthStore((state) => state.user);
-
-  console.log(user);
+  const { convoLoading } = useChatStore();
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -35,15 +36,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              className="bg-gradient-primary"
-              size="lg"
-              asChild
-            >
+            <SidebarMenuButton className="bg-gradient-chat" size="lg" asChild>
               <a href="#">
                 <div className="flex items-center justify-between w-full px-2">
-                  <h2 className="text-xl font-bold text-white ">Moji</h2>
-                  <div className="flex items-center gap-2 ">
+                  <h2 className="text-xl font-bold text-white ">PingMe</h2>
+                  <div className="flex items-center gap-2">
                     <Sun className="text-white/80 size-4" />
                     <Switch
                       checked={isDark}
@@ -76,7 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <NewGroupChatModel />
           </SidebarGroupAction>
           <SidebarGroupContent>
-            <GroupChatList />
+            {convoLoading ? <ConversationSkeleton /> : <GroupChatList />}
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -87,7 +84,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <AddFriendModal />
           </SidebarGroupAction>
           <SidebarGroupContent>
-            <DirectMessageList />
+            {convoLoading ? <ConversationSkeleton /> : <DirectMessageList />}
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

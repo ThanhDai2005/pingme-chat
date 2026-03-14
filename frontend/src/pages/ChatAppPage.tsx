@@ -7,7 +7,7 @@ const ChatAppPage = () => {
     <>
       <SidebarProvider>
         <AppSidebar />
-        <div className="w-full min-h-screen p-2">
+        <div className="w-full h-screen p-2">
           <ChatWindowLayout />
         </div>
       </SidebarProvider>
