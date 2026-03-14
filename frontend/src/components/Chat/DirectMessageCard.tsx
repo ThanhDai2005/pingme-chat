@@ -5,7 +5,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useChatStore } from "@/stores/useChatStore";
 import AvatarUser from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
-import UnreadCountBadge from "./UnReadCountBadge";
+import UnreadCountBadge from "./UnreadCountBadge";
 import { useSocketStore } from "@/stores/useSocketStore";
 
 const DirectMessageCard = ({ item }) => {
