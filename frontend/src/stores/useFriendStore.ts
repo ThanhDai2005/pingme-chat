@@ -38,6 +38,23 @@ export const useFriendStore = create<FriendState>((set, get) => ({
     }
   },
 
+  cancelFriendRequest: async (requestId: string) => {
+    try {
+      set({ loading: true });
+
+      const res = await friendService.cancelFriendRequest(requestId);
+
+      set((state) => ({
+        sendList: state.sendList.filter((item) => item._id != requestId),
+      }));
+    } catch (error) {
+      console.log("Lỗi xảy ra khi hủy lời mời kết bạn", error);
+      throw error;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
   getFriendRequest: async () => {
     try {
       set({ loading: true });

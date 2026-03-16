@@ -76,11 +76,11 @@ export function NavUser({ user }) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => setOpenProfile(true)}>
-                  <UserIcon className="text-black dark:text-white" />
+                  <UserIcon className="text-current" />
                   Tài Khoản
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setOpen(true)}>
-                  <Bell className="text-black dark:text-white" />
+                  <Bell className="text-current" />
                   Thông Báo
                 </DropdownMenuItem>
               </DropdownMenuGroup>

@@ -51,12 +51,12 @@ export interface ChatState {
   sendDirectMessage: (
     recipientId: string,
     content: string,
-    imgUrl?: string,
+    imgUrl?: string[],
   ) => Promise<void>;
   sendGroupMessage: (
     conversationId: string,
     content: string,
-    imgUrl?: string,
+    imgUrl?: string[],
   ) => Promise<void>;
   addMessage: (message: Message) => Promise<void>;
   updateConversation: (conversation: unknown) => void;
@@ -84,6 +84,7 @@ export interface FriendState {
   loading: boolean;
   searchUser: (username: string) => Promise<User | null>;
   sendFriendRequest: (to: string, message?: string) => Promise<string>;
+  cancelFriendRequest: (requestId: string) => Promise<void>;
   getFriendRequest: () => Promise<void>;
   acceptFriendRequest: (requestId: string) => Promise<void>;
   declineFriendRequest: (requestId: string) => Promise<void>;

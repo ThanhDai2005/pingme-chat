@@ -15,6 +15,12 @@ export const friendService = {
     return res.data;
   },
 
+  cancelFriendRequest: async (requestId: string) => {
+    const res = await api.delete(`/friend/requests/${requestId}/cancel`);
+
+    return res.data;
+  },
+
   getFriendRequests: async () => {
     const res = await api.get("/friend/requests");
 

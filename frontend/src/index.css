@@ -512,3 +512,15 @@
 .dark .bg-messenger-background {
   background: radial-gradient(125% 125% at 50% 10%, #000000 40%, #0d1a36 100%);
 }
+
+.hover\:text-accent-foreground {
+  &:hover {
+    color: #000000;
+  }
+}
+
+.dark .hover\:text-accent-foreground {
+  &:hover {
+    color: #ffffff;
+  }
+}

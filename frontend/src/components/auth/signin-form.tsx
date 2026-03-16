@@ -45,7 +45,7 @@ export function SignInForm({
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center gap-2">
-                <a className="inline-block mx-auto" href="/">
+                <a className="inline-block mx-auto" href="/signin">
                   <img
                     className="object-contain w-12 h-12"
                     src="/logo.png"

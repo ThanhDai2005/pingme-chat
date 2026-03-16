@@ -23,7 +23,7 @@ const GroupChatCard = ({ item }) => {
     <>
       <Card
         key={item._id}
-        className={`p-3 transition-all border-none cursor-pointer glass hover:bg-muted/30 ${activeConversationId == item._id && "ring-2 ring-primary/50 bg-gradient-to-tr from-primary-glow/10 to-primary-foreground"}`}
+        className={`p-3 transition-all border-none cursor-pointer glass hover:bg-muted/30 ${activeConversationId == item._id && "ring-2 ring-primary/50 bg-gradient-to-tr from-primary-glow/10 to-primary-foreground group"}`}
         onClick={() => handleSelectConversation(item._id)}
       >
         <div className="flex items-center gap-3">

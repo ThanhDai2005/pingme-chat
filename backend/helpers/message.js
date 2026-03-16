@@ -8,7 +8,7 @@ export const updateConversationAfterCreateMessage = (
     lastMessageAt: message.createdAt,
     lastMessage: {
       messageId: message._id,
-      content: message.imgUrl ? "đã gửi 1 ảnh" : message.content,
+      content: message.imgUrl.length > 0 ? "đã gửi 1 ảnh" : message.content,
       senderId: senderId,
       createdAt: message.createdAt,
     },

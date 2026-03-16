@@ -24,11 +24,6 @@ let streamUpload = (buffer, options) => {
   });
 };
 
-const uploadToCloudinary = async (buffer) => {
-  let result = await streamUpload(buffer);
-  return result;
-};
-
 const uploadAvatar = async (buffer) => {
   return await streamUpload(buffer, {
     folder: "PingMe/avatars",
@@ -42,6 +37,7 @@ const uploadMessageImage = async (buffer) => {
   });
 };
 
+// Upload 1 ảnh
 export const uploadSingle = async (req, res, next) => {
   try {
     let result;
@@ -61,18 +57,23 @@ export const uploadSingle = async (req, res, next) => {
   next();
 };
 
-export const uploadFields = async (req, res, next) => {
-  for (const key in req["files"]) {
-    const links = [];
-    for (const item of req["files"][key]) {
-      try {
-        const link = await uploadToCloudinary(item.buffer);
-        links.push(link);
-      } catch (error) {
-        console.log(error);
-      }
+// upload nhiều ảnh
+export const uploadMulti = async (req, res, next) => {
+  try {
+    if (!req.files || req.files.length === 0) {
+      return next();
     }
-    req.body[key] = links;
+
+    const uploads = req.files.map((file) => uploadMessageImage(file.buffer));
+
+    const results = await Promise.all(uploads);
+    const fieldName = req.files[0].fieldname;
+    req.body[fieldName] = results.map((item) => ({
+      url: item.secure_url,
+    }));
+  } catch (error) {
+    console.log(error);
   }
+
   next();
 };

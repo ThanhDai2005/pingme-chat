@@ -1,9 +1,11 @@
 import { useFriendStore } from "@/stores/useFriendStore";
 import AvatarUser from "../Chat/UserAvatar";
+import { Button } from "../ui/button";
+import { UserX2 } from "lucide-react";
 
 const SentList = () => {
   const sendList = useFriendStore((state) => state.sendList);
-
+  const { loading, cancelFriendRequest } = useFriendStore();
   if (sendList.length == 0) {
     return (
       <p className="text-sm text-muted-foreground">
@@ -11,6 +13,14 @@ const SentList = () => {
       </p>
     );
   }
+
+  const handleCancelFriendRequest = async (requestId: string) => {
+    try {
+      await cancelFriendRequest(requestId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -33,9 +43,14 @@ const SentList = () => {
                 </p>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-              Đang chờ trả lời...
-            </div>
+            <Button
+              onClick={() => handleCancelFriendRequest(item._id)}
+              variant={"secondary"}
+              disabled={loading}
+            >
+              <UserX2 />
+              Hủy yêu cầu
+            </Button>
           </div>
         ))}
       </div>

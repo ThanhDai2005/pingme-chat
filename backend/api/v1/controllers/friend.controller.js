@@ -83,6 +83,43 @@ export const sendFriendRequest = async (req, res) => {
   }
 };
 
+// [DELETE] /api/v1/friend/requests/:requestId/cancel
+export const cancelFriendRequest = async (req, res) => {
+  try {
+    const requestId = req.params.requestId;
+    const userId = req.user._id;
+
+    const request = await FriendRequest.findOne({
+      _id: requestId,
+    });
+
+    if (!request) {
+      return res.status(404).json({
+        message: "Không tìm thấy lời mời kết bạn",
+      });
+    }
+
+    if (request.from.toString() != userId.toString()) {
+      return res.status(400).json({
+        message: "chỉ có người gửi lời mời mới có thể hủy",
+      });
+    }
+
+    await FriendRequest.deleteOne({
+      _id: requestId,
+    });
+
+    res.status(200).json({
+      message: "đã hủy yêu cầu kết bạn",
+    });
+  } catch (error) {
+    console.log("Lỗi khi gửi yêu cầu kết bạn", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
 // [POST] /api/v1/friend/requests/:requestId/accept
 export const acceptFriendRequest = async (req, res) => {
   try {

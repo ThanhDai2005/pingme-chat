@@ -33,7 +33,7 @@ const SendFriendRequest = ({
       <DialogFooter>
         <DialogClose asChild>
           <Button
-            className="flex-1 hover:text-destructive"
+            className="flex-1 bg-muted/50 hover:bg-muted dark:bg-muted/40 dark:hover:bg-muted/60"
             variant="outline"
             onClick={onBack}
           >

@@ -17,6 +17,7 @@ const MessageInput = ({ selectedConvo }) => {
   const isDark = useThemeStore((state) => state.isDark);
   const [openEmoji, setOpenEmoji] = useState(false);
   const inputRef = useRef(null);
+  const [imagesPreview, setImagesPreview] = useState([]);
 
   const handleClick = () => {
     if (inputRef.current) {
@@ -25,35 +26,18 @@ const MessageInput = ({ selectedConvo }) => {
   };
 
   const handleChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files);
+    if (files.length == 0) return;
 
-    const formData = new FormData();
-    formData.append("imgUrl", file);
-    try {
-      const res = await chatService.uploadImage(formData);
-
-      sendImageMessage(res.imgUrl);
-    } catch (error) {
-      console.log(error);
-    }
+    const preview = files.map((file) => ({
+      file: file,
+      url: URL.createObjectURL(file), // tạo ra đường dẫn ảnh hiển thị ra tạm thời
+    }));
+    setImagesPreview([...imagesPreview, ...preview]);
   };
 
-  const sendImageMessage = async (imgUrl) => {
-    try {
-      if (selectedConvo?.type == "direct") {
-        const participant = selectedConvo?.participants.find(
-          (p) => p.userId._id != user?._id,
-        );
-
-        await sendDirectMessage(participant.userId._id, "", imgUrl);
-      } else {
-        await sendGroupMessage(selectedConvo._id, "", imgUrl);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Lỗi xảy ra khi gửi tin nhắn. Bạn hãy thử lại!");
-    }
+  const handleFilter = (url) => {
+    setImagesPreview(imagesPreview.filter((item) => item.url != url));
   };
 
   const handleEnter = (e) => {
@@ -64,18 +48,32 @@ const MessageInput = ({ selectedConvo }) => {
   };
 
   const sendMessage = async () => {
-    if (!value.trim()) return;
+    if (!value.trim() && imagesPreview.length == 0) return;
     const currentValue = value;
     setValue("");
     try {
+      let url = [];
+
+      if (imagesPreview.length > 0) {
+        const formData = new FormData();
+        imagesPreview.map((img) => formData.append("imgUrl", img.file));
+
+        const res = await chatService.uploadImage(formData);
+
+        url = res?.imgUrl.map((item) => item.url); // [{url: "..."},{url: "..."},{url: "..."}] => [url, url, url]
+      }
+
       if (selectedConvo?.type == "direct") {
         const participant = selectedConvo?.participants.find(
           (p) => p.userId._id != user?._id,
         );
-        await sendDirectMessage(participant.userId._id, currentValue);
+        await sendDirectMessage(participant.userId._id, currentValue, url);
         setValue("");
+        setImagesPreview([]);
       } else {
-        await sendGroupMessage(selectedConvo._id, currentValue);
+        await sendGroupMessage(selectedConvo._id, currentValue, url);
+        setValue("");
+        setImagesPreview([]);
       }
     } catch (error) {
       console.log(error);
@@ -85,17 +83,42 @@ const MessageInput = ({ selectedConvo }) => {
 
   return (
     <>
+      {imagesPreview.length > 0 && (
+        <div className="flex gap-2 px-3 pt-2 overflow-x-auto">
+          {imagesPreview.map((img, index) => (
+            <div key={index} className="relative">
+              <img
+                src={img.url}
+                className="object-cover w-20 h-20 rounded-lg"
+              />
+
+              <button
+                onClick={() => handleFilter(img.url)}
+                className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-black rounded-full -top-2 -right-2"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
       <div className="flex items-center gap-2 p-3 min-h-14 bg-background">
         <Button
           onClick={handleClick}
           variant={"ghost"}
           size={"icon"}
-          className="transition-all hover:bg-primary/10"
+          className="transition-all hover:bg-primary/10 hover:text-black dark:hover:text-white"
         >
           <ImagePlus className="size-4" />
         </Button>
 
-        <input onChange={handleChange} ref={inputRef} type="file" hidden />
+        <input
+          multiple
+          onChange={handleChange}
+          ref={inputRef}
+          type="file"
+          hidden
+        />
         <div className="relative flex-1">
           <Input
             placeholder="Soạn tin nhắn ..."
@@ -117,7 +140,7 @@ const MessageInput = ({ selectedConvo }) => {
           </div>
         </div>
         <Button
-          disabled={!value.trim()}
+          disabled={!value.trim() && imagesPreview.length == 0}
           className="transition-all bg-gradient-chat hover:shadow-glow hover:scale-105"
           onClick={sendMessage}
         >

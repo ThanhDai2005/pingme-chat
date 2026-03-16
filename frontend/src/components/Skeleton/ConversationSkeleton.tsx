@@ -6,13 +6,11 @@ const ConversationSkeleton = () => {
       {Array.from({ length: 3 }).map((_, index) => (
         <Card key={index} className="p-3 border-none glass animate-pulse">
           <div className="flex items-center gap-3">
-            {/* Avatar skeleton */}
-            <div className="rounded-full size-10 bg-muted" />
+            <div className="rounded-full size-10 bg-muted/70 dark:bg-muted/40" />
 
-            {/* Info skeleton */}
             <div className="flex-1 space-y-2">
-              <div className="w-1/2 h-3 rounded bg-muted" />
-              <div className="w-3/4 h-3 rounded bg-muted" />
+              <div className="w-1/2 h-3 rounded bg-muted/70 dark:bg-muted/40" />
+              <div className="w-3/4 h-3 rounded bg-muted/70 dark:bg-muted/40" />
             </div>
           </div>
         </Card>

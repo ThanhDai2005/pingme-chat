@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 import multer, { memoryStorage } from "multer";
-import { uploadSingle } from "../middlewares/uploadCloud.middleware.js";
+import { uploadMulti } from "../middlewares/uploadCloud.middleware.js";
 
 const upload = multer({
   storage: memoryStorage(),
@@ -23,8 +23,8 @@ router.post("/group", checkFriendSendGroupMessage, controller.sendGroupMessage);
 
 router.post(
   "/upload",
-  upload.single("imgUrl"),
-  uploadSingle,
+  upload.array("imgUrl", 10),
+  uploadMulti,
   controller.uploadImage,
 );
 

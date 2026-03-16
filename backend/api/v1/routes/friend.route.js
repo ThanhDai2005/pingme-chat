@@ -5,6 +5,8 @@ import * as controller from "../controllers/friend.controller.js";
 
 router.post("/requests", controller.sendFriendRequest);
 
+router.delete("/requests/:requestId/cancel", controller.cancelFriendRequest);
+
 router.post("/requests/:requestId/accept", controller.acceptFriendRequest);
 
 router.post("/requests/:requestId/decline", controller.declineFriendRequest);
