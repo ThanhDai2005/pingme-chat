@@ -5,10 +5,10 @@ import { UserPlus } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 
 const SendFriendRequest = ({
-  handleSendFriendRequest,
-  username,
+  selectUser,
   message,
   setMessage,
+  handleSendFriendRequest,
   loading,
   onBack,
 }) => {
@@ -16,7 +16,8 @@ const SendFriendRequest = ({
     <>
       <form onSubmit={handleSendFriendRequest} className="space-y-2">
         <div className="text-sm text-emerald-500">
-          Tìm thấy <span className="font-semibold">@{username}</span> rồi nè🎉
+          Tìm thấy <span className="font-semibold">@{selectUser.username}</span>{" "}
+          rồi nè🎉
         </div>
         <Label className="text-sm font-semibold" htmlFor="message">
           Giới thiệu

@@ -17,9 +17,14 @@ const messageSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    imgUrl: {
-      type: [String],
-    },
+    imgUrl: [
+      {
+        url: String,
+        fileType: String,
+        name: String,
+        _id: false,
+      },
+    ],
   },
   { timestamps: true },
 );

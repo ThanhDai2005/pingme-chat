@@ -40,6 +40,7 @@ export interface ChatState {
     }
   >;
   activeConversationId: string | null;
+  imagesPreview: [];
   convoLoading: boolean;
   messageLoading: boolean;
   loading: boolean;
@@ -67,6 +68,9 @@ export interface ChatState {
     name: string,
     memberIds: string[],
   ) => Promise<void>;
+  addImagesPreview: (preview: []) => void;
+  filterImagesPreview: (url: string) => void;
+  clearImagesPreview: () => void;
 }
 
 export interface SocketState {

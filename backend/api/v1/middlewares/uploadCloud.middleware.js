@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import iconv from "iconv-lite";
 
 let streamUpload = (buffer, options) => {
   return new Promise((resolve, reject) => {
@@ -57,7 +58,7 @@ export const uploadSingle = async (req, res, next) => {
   next();
 };
 
-// upload nhiều ảnh
+// upload nhiều file gồm ảnh video tài liệu
 export const uploadMulti = async (req, res, next) => {
   try {
     if (!req.files || req.files.length === 0) {
@@ -68,9 +69,20 @@ export const uploadMulti = async (req, res, next) => {
 
     const results = await Promise.all(uploads);
     const fieldName = req.files[0].fieldname;
-    req.body[fieldName] = results.map((item) => ({
-      url: item.secure_url,
-    }));
+
+    req.body[fieldName] = results.map((item, index) => {
+      // 🔥 FIX ENCODE
+      const originalName = iconv.decode(
+        Buffer.from(req.files[index].originalname, "latin1"),
+        "utf8",
+      );
+
+      return {
+        url: item.secure_url,
+        fileType: item.resource_type === "raw" ? "file" : item.resource_type,
+        name: originalName,
+      };
+    });
   } catch (error) {
     console.log(error);
   }

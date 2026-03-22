@@ -48,7 +48,7 @@ const GroupChatCard = ({ item }) => {
               <p className="text-sm truncate text-muted-foreground">
                 {item.participants.length} thành viên
               </p>
-              <MoreHorizontal className="transition-all opacity-0 size-4 text-muted-foreground group-hover:opacity-100 hover:size-5" />
+              <MoreHorizontal className="transition-all opacity-0 size-4 text-muted-foreground group-hover:opacity-100 hover:size-5 shrink-0" />
             </div>
           </div>
         </div>

@@ -106,12 +106,12 @@ export const sendGroupMessage = async (req, res) => {
   }
 };
 
-// [GET] /api/v1/message/upload
+// [POST] /api/v1/message/upload
 export const uploadImage = async (req, res) => {
   try {
     const imgUrl = req.body.imgUrl;
 
-    res.json({
+    res.status(200).json({
       imgUrl: imgUrl,
     });
   } catch (error) {

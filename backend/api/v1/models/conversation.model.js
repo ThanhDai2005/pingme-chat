@@ -39,6 +39,11 @@ const lastMessageSchema = mongoose.Schema(
     messageId: {
       type: String,
     },
+    type: {
+      type: String,
+      enum: ["text", "file"],
+      default: "text",
+    },
     content: {
       type: String,
       default: null,
@@ -96,7 +101,7 @@ const conversationSchema = mongoose.Schema(
 );
 
 conversationSchema.index({
-  "participant.userId": 1,
+  "participants.userId": 1,
   lastMessageAt: -1,
 });
 

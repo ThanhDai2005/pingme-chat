@@ -1,11 +1,13 @@
 export interface Participant {
-  _id: string;
-  displayName: string;
-  avatarUrl?: string | null;
-  joinedAt: string;
+  userId: {
+    _id: string;
+    displayName: string;
+    avatarUrl?: string | null;
+  };
+  joinAt: string;
 }
 
-export interface SeenUser {
+export interface SeenBy {
   _id: string;
   displayName?: string;
   avatarUrl?: string | null;
@@ -17,31 +19,34 @@ export interface Group {
 }
 
 export interface LastMessage {
-  _id: string;
-  content: string;
-  createdAt: string;
-  sender: {
+  messageId?: string;
+  type: "text" | "file";
+  content: string | null;
+  senderId: {
     _id: string;
     displayName: string;
     avatarUrl?: string | null;
   };
+  createdAt: string | null;
 }
 
 export interface Conversation {
   _id: string;
   type: "direct" | "group";
-  group: Group;
+  group?: Group;
   participants: Participant[];
   lastMessageAt: string;
-  seenBy: SeenUser[];
+  seenBy: SeenBy[];
   lastMessage: LastMessage | null;
   unreadCounts: Record<string, number>; // key = userId, value = unread count
   createdAt: string;
   updatedAt: string;
 }
 
-export interface ConversationResponse {
-  conversations: Conversation[];
+export interface MessageImage {
+  url: string;
+  fileType: string;
+  name: string;
 }
 
 export interface Message {
@@ -49,7 +54,7 @@ export interface Message {
   conversationId: string;
   senderId: string;
   content: string | null;
-  imgUrl?: string | null;
+  imgUrl?: MessageImage[];
   updatedAt?: string | null;
   createdAt: string;
   isOwn?: boolean;

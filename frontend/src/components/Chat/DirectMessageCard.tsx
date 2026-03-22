@@ -16,13 +16,18 @@ const DirectMessageCard = ({ item }) => {
 
   const otherUser = item.participants.find((p) => p.userId._id != user?._id);
   const unreadCount = item.unreadCounts[user?._id];
-  const lastMessageContent =
-    item.lastMessage?.content == "đã gửi 1 ảnh"
-      ? item.lastMessage?.senderId._id == user?._id ||
-        item.lastMessage?.senderId == user?._id
-        ? "Bạn đã gửi 1 ảnh"
-        : `${otherUser?.userId?.displayName} đã gửi 1 ảnh`
-      : item.lastMessage?.content;
+  const isMe =
+    item.lastMessage?.senderId._id == user?._id ||
+    item.lastMessage?.senderId == user?._id;
+  let lastMessageContent = "";
+
+  if (item.lastMessage?.type == "file") {
+    lastMessageContent = isMe
+      ? `Bạn ${item.lastMessage?.content}`
+      : `${otherUser?.userId?.displayName} ${item.lastMessage?.content}`;
+  } else {
+    lastMessageContent = item.lastMessage?.content;
+  }
   const handleSelectConversation = async (id: string) => {
     setActiveConversation(id);
     if (!messages[id]) {
@@ -69,11 +74,11 @@ const DirectMessageCard = ({ item }) => {
             </div>
             <div className="flex items-center justify-between">
               <p
-                className={`text-sm truncate ${unreadCount > 0 ? "font-medium text-foreground" : "text-muted-foreground"}`}
+                className={`text-sm line-clamp-1 ${unreadCount > 0 ? "font-medium text-foreground" : "text-muted-foreground"}`}
               >
                 {lastMessageContent}
               </p>
-              <MoreHorizontal className="transition-all opacity-0 size-4 text-muted-foreground group-hover:opacity-100 hover:size-5" />
+              <MoreHorizontal className="transition-all opacity-0 size-4 text-muted-foreground group-hover:opacity-100 hover:size-5 shrink-0" />
             </div>
           </div>
         </div>

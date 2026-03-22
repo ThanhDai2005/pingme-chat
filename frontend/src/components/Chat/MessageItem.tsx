@@ -5,6 +5,7 @@ import { Badge } from "../ui/badge";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
 import { useEffect, useRef } from "react";
+import { Download, FileText, Play } from "lucide-react";
 
 const MessageItem = ({
   mess,
@@ -36,7 +37,24 @@ const MessageItem = ({
     return () => gallery?.destroy();
   }, [mess.imgUrl]);
 
-  console.log(mess);
+  const handleDownload = async (item) => {
+    try {
+      const response = await fetch(item.url);
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = item.name || "download";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.log("Lỗi tải file", error);
+    }
+  };
 
   return (
     <>
@@ -70,34 +88,76 @@ const MessageItem = ({
           )}
 
           {mess.imgUrl?.length > 0 && (
-            <div
-              ref={images}
-              className={`grid gap-1 mb-2
-              ${
-                mess.imgUrl.length == 1
-                  ? "grid-cols-1"
-                  : mess.imgUrl.length <= 4
-                    ? "grid-cols-2"
-                    : "grid-cols-3"
-              }
-            `}
-            >
-              {mess.imgUrl.map((img, index) => (
+            <>
+              {mess.imgUrl.filter((item) => item.fileType == "image").length >
+                0 && (
                 <div
-                  key={index}
-                  className={`overflow-hidden rounded-lg cursor-pointer ${
-                    mess.imgUrl.length === 1
-                      ? "max-w-[250px] sm:max-w-[400px]"
-                      : "aspect-square max-w-[100px] sm:max-w-[180px] "
+                  ref={images}
+                  className={`grid gap-1 mb-2
+                  ${
+                    mess.imgUrl.filter((item) => item.fileType === "image")
+                      .length == 1
+                      ? "grid-cols-1"
+                      : mess.imgUrl.filter((item) => item.fileType == "image")
+                            .length <= 4
+                        ? "grid-cols-2"
+                        : "grid-cols-3"
                   }`}
                 >
-                  <img
-                    src={img}
-                    className="object-cover w-full h-full transition hover:opacity-90"
-                  />
+                  {mess.imgUrl
+                    .filter((item) => item.fileType == "image")
+                    .map((item, index) => (
+                      <div
+                        key={index}
+                        className="overflow-hidden rounded-lg cursor-pointer"
+                      >
+                        <img
+                          src={item.url}
+                          className="object-cover w-full h-full transition hover:opacity-90"
+                        />
+                      </div>
+                    ))}
                 </div>
-              ))}
-            </div>
+              )}
+
+              <div className="flex flex-col gap-1 ">
+                {mess.imgUrl
+                  .filter((item) => item.fileType != "image")
+                  .map((item, index) => (
+                    <div key={index}>
+                      {/* VIDEO */}
+                      {item.fileType == "video" && (
+                        <div className="overflow-hidden rounded-2xl max-w-[250px] mt-1">
+                          <video
+                            src={item.url}
+                            controls
+                            className="w-full h-auto max-h-[300px]"
+                          />
+                        </div>
+                      )}
+
+                      {item.fileType == "file" && (
+                        <div className="flex items-center gap-3 px-3 py-2 bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-xl max-w-[280px] shadow-sm mt-1">
+                          <div className="flex items-center justify-center bg-white rounded-full shadow-sm size-10 shrink-0">
+                            <FileText className="text-black size-5" />
+                          </div>
+
+                          <div className="flex-1 text-sm font-medium break-words line-clamp-3">
+                            {item.name}
+                          </div>
+
+                          <button
+                            onClick={() => handleDownload(item)}
+                            className="p-2 ml-2 transition-all rounded-full hover:bg-white/50"
+                          >
+                            <Download className="text-gray-600 size-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+              </div>
+            </>
           )}
 
           {/* sent / seen */}

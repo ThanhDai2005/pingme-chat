@@ -11,12 +11,13 @@ export const useChatStore = create<ChatState>()(
       conversations: [],
       messages: {},
       activeConversationId: null,
+      imagesPreview: [],
       convoLoading: false,
       messageLoading: false,
       loading: false,
 
       setActiveConversation: (id) => {
-        set({ activeConversationId: id });
+        set({ activeConversationId: id, imagesPreview: [] });
       },
 
       reset: () => {
@@ -24,8 +25,10 @@ export const useChatStore = create<ChatState>()(
           conversations: [],
           messages: {},
           activeConversationId: null,
+          imagesPreview: [],
           convoLoading: false,
           messageLoading: false,
+          loading: false,
         });
       },
 
@@ -252,11 +255,39 @@ export const useChatStore = create<ChatState>()(
           if (!get().messages[res.conversation._id]) {
             await get().getMessages(res.conversation._id);
           }
+
+          set({ imagesPreview: [] });
         } catch (error) {
           console.log("Lỗi xảy ra khi createConversation", error);
         } finally {
           set({ loading: false });
         }
+      },
+
+      addImagesPreview: (preview) => {
+        set((state) => {
+          return {
+            imagesPreview: [...state.imagesPreview, ...preview],
+          };
+        });
+      },
+
+      filterImagesPreview: (url) => {
+        set((state) => {
+          return {
+            imagesPreview: state.imagesPreview.filter(
+              (item) => item.url != url,
+            ),
+          };
+        });
+      },
+
+      clearImagesPreview: () => {
+        set((state) => {
+          return {
+            imagesPreview: [],
+          };
+        });
       },
     }),
 

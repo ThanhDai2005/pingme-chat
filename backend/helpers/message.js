@@ -8,7 +8,21 @@ export const updateConversationAfterCreateMessage = (
     lastMessageAt: message.createdAt,
     lastMessage: {
       messageId: message._id,
-      content: message.imgUrl.length > 0 ? "đã gửi 1 ảnh" : message.content,
+      type: message.imgUrl?.length > 0 ? "file" : "text",
+      content:
+        message.imgUrl?.length > 0
+          ? (() => {
+              const first = message.imgUrl[0];
+
+              if (message.imgUrl.length > 1) {
+                return `đã gửi ${message.imgUrl.length} file đính kèm`;
+              }
+
+              if (first.fileType == "image") return "đã gửi 1 ảnh";
+              if (first.fileType == "video") return "đã gửi 1 video";
+              return "đã gửi 1 file đính kèm";
+            })()
+          : message.content,
       senderId: senderId,
       createdAt: message.createdAt,
     },

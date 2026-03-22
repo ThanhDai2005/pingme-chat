@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      toLowercase: true,
+      lowercase: true,
     },
     hashedPassword: {
       type: String,
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
-      toLowercase: true,
+      lowercase: true,
     },
     displayName: {
       type: String,
@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
       sparse: true, // cho phép null, nhưng không được trùng
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const User = mongoose.model("User", userSchema, "users");

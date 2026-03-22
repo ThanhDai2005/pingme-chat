@@ -19,6 +19,7 @@ export const getDetail = async (req, res) => {
 export const searchUser = async (req, res) => {
   try {
     const username = req.query.username;
+    const userId = req.user._id;
 
     if (!username || username.trim() == "") {
       return res.status(400).json({
@@ -26,9 +27,19 @@ export const searchUser = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({
-      username: username,
-    }).select("_id displayName username avatarUrl");
+    const searchWords = username
+      .trim()
+      .split(/\s+/)
+      .map((item) => new RegExp(item, "i"));
+
+    const user = await User.find({
+      _id: { $ne: userId },
+      $and: searchWords.map((item) => ({
+        $or: [{ username: item }, { displayName: item }],
+      })),
+    })
+      .select("_id displayName username avatarUrl")
+      .limit(10);
 
     res.status(200).json({
       user: user,

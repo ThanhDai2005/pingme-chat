@@ -5,6 +5,9 @@ import { uploadMulti } from "../middlewares/uploadCloud.middleware.js";
 
 const upload = multer({
   storage: memoryStorage(),
+  limits: {
+    fileSize: 100 * 1024 * 1024,
+  },
 });
 
 import * as controller from "../controllers/message.controller.js";
