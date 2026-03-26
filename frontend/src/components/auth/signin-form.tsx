@@ -35,7 +35,10 @@ export function SignInForm({
     const { username, password } = data;
 
     const res = await signIn(username, password);
-    navigate("/");
+
+    if (res.accessToken) {
+      navigate("/");
+    }
   };
 
   return (

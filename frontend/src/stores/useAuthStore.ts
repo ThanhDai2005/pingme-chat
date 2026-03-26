@@ -31,7 +31,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true });
 
-          await authService.signUp(
+          const res = await authService.signUp(
             username,
             password,
             email,
@@ -42,9 +42,11 @@ export const useAuthStore = create<AuthState>()(
           toast.success(
             "Đăng ký thành công! Bạn sẽ được chuyển sang trang đăng nhập.",
           );
+
+          return res;
         } catch (error) {
           console.error(error);
-          toast.error("Đăng ký không thành công");
+          toast.error(error?.response?.data?.message);
         } finally {
           set({ loading: false });
         }
@@ -55,15 +57,16 @@ export const useAuthStore = create<AuthState>()(
           get().clearState();
           set({ loading: true });
 
-          const { accessToken } = await authService.signIn(username, password);
-          get().setAccessToken(accessToken);
+          const res = await authService.signIn(username, password);
+          get().setAccessToken(res.accessToken);
           await get().getDetail();
           useChatStore.getState().getListConversation();
 
           toast.success("Chào mừng bạn quay lại với Moji 🎉");
+          return res;
         } catch (error) {
           console.error(error);
-          toast.error("Đăng nhập không thành công!");
+          toast.error(error?.response?.data?.message);
         } finally {
           set({ loading: false });
         }

@@ -5,7 +5,7 @@ import { Badge } from "../ui/badge";
 import Viewer from "viewerjs";
 import "viewerjs/dist/viewer.css";
 import { useEffect, useRef } from "react";
-import { Download, FileText, Play } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 
 const MessageItem = ({
   mess,
@@ -59,7 +59,7 @@ const MessageItem = ({
   return (
     <>
       <div
-        className={`flex gap-2 message-bounce mt-1 ${mess.isOwn ? "justify-end" : "justify-start"}`}
+        className={`flex gap-2 message-bounce my-1 ${mess.isOwn ? "justify-end" : "justify-start"}`}
       >
         {!mess.isOwn && ( // chỉ có người khác gửi mới hiện lên avatar
           <div className="w-8">
@@ -93,7 +93,7 @@ const MessageItem = ({
                 0 && (
                 <div
                   ref={images}
-                  className={`grid gap-1 mb-2
+                  className={`grid gap-1 my-1
                   ${
                     mess.imgUrl.filter((item) => item.fileType === "image")
                       .length == 1
@@ -120,43 +120,45 @@ const MessageItem = ({
                 </div>
               )}
 
-              <div className="flex flex-col gap-1 ">
-                {mess.imgUrl
-                  .filter((item) => item.fileType != "image")
-                  .map((item, index) => (
-                    <div key={index}>
-                      {/* VIDEO */}
-                      {item.fileType == "video" && (
-                        <div className="overflow-hidden rounded-2xl max-w-[250px] mt-1">
-                          <video
-                            src={item.url}
-                            controls
-                            className="w-full h-auto max-h-[300px]"
-                          />
-                        </div>
-                      )}
-
-                      {item.fileType == "file" && (
-                        <div className="flex items-center gap-3 px-3 py-2 bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-xl max-w-[280px] shadow-sm mt-1">
-                          <div className="flex items-center justify-center bg-white rounded-full shadow-sm size-10 shrink-0">
-                            <FileText className="text-black size-5" />
+              {mess.imgUrl.filter((item) => item.fileType != "image").length >
+                0 && (
+                <div className="flex flex-col gap-1 my-1">
+                  {mess.imgUrl
+                    .filter((item) => item.fileType != "image")
+                    .map((item, index) => (
+                      <div key={index}>
+                        {item.fileType == "video" && (
+                          <div className="overflow-hidden rounded-2xl max-w-[250px] shadow-sm dark:shadow-2xl">
+                            <video
+                              src={item.url}
+                              controls
+                              className="w-full h-auto max-h-[300px]"
+                            />
                           </div>
+                        )}
 
-                          <div className="flex-1 text-sm font-medium break-words line-clamp-3">
-                            {item.name}
+                        {item.fileType == "file" && (
+                          <div className="flex items-center gap-3 px-3 py-2 bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-xl max-w-[280px] shadow-sm">
+                            <div className="flex items-center justify-center bg-white rounded-full shadow-sm size-10 shrink-0">
+                              <FileText className="text-black size-5" />
+                            </div>
+
+                            <div className="flex-1 text-sm font-medium break-words line-clamp-3">
+                              {item.name}
+                            </div>
+
+                            <button
+                              onClick={() => handleDownload(item)}
+                              className="p-2 ml-2 transition-all rounded-full hover:bg-white/50 "
+                            >
+                              <Download className="text-gray-600 dark:text-current size-4" />
+                            </button>
                           </div>
-
-                          <button
-                            onClick={() => handleDownload(item)}
-                            className="p-2 ml-2 transition-all rounded-full hover:bg-white/50"
-                          >
-                            <Download className="text-gray-600 size-4" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
             </>
           )}
 

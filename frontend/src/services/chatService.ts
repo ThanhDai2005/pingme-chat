@@ -66,6 +66,12 @@ export const chatService = {
     return res.data;
   },
 
+  deleteConversation: async (conversationId: string) => {
+    const res = await api.patch(`/conversation/${conversationId}/delete`);
+
+    return res.data;
+  },
+
   uploadImage: async (formData: FormData) => {
     const res = await api.post("/message/upload", formData);
 

@@ -137,7 +137,7 @@ export const useChatStore = create<ChatState>()(
       addMessage: async (message) => {
         try {
           const { user } = useAuthStore.getState();
-          const { getMessages, messages } = get();
+          const { messages, conversations, activeConversationId } = get();
 
           message.isOwn = message.senderId == user?._id;
 
@@ -145,27 +145,47 @@ export const useChatStore = create<ChatState>()(
 
           let prevItems = messages[convoId]?.items ?? [];
 
-          // Trường hợp A nhắn tin cho B, nhưng B chưa mở ô chat A lên kể từ khi mở App.
-          // cần tải tin nhắn cũ về trước để "nối" tin nhắn mới vào đúng dòng thời gian.
-          if (prevItems.length == 0) {
-            await getMessages(message.conversationId);
-            prevItems = messages[convoId].items ?? [];
+          // kiểm tra tin nhắn có bị trùng ko
+          const isExist = prevItems.some(
+            (m) => m._id?.toString() == message._id?.toString(),
+          );
+
+          if (isExist) return;
+
+          const existConvo = conversations.some(
+            (c) => c._id.toString() == convoId.toString(),
+          );
+
+          if (!existConvo) {
+            const res = await chatService.getListConversation();
+
+            const newConvo = res.conversation.find(
+              (c) => c._id.toString() == convoId.toString(),
+            );
+
+            if (newConvo) {
+              set((state) => ({
+                conversations: [newConvo, ...state.conversations],
+              }));
+            }
           }
 
-          set((state) => {
-            return {
-              messages: {
-                ...state.messages,
-                [convoId]: {
-                  items: [...prevItems, message],
-                  hasMore: state.messages[convoId].hasMore,
-                  nextCursor: state.messages[convoId].nextCursor,
-                },
+          if (activeConversationId != convoId) {
+            return;
+          }
+
+          set((state) => ({
+            messages: {
+              ...state.messages,
+              [convoId]: {
+                items: [...prevItems, message],
+                hasMore: state.messages[convoId]?.hasMore,
+                nextCursor: state.messages[convoId]?.nextCursor,
               },
-            };
-          });
+            },
+          }));
         } catch (error) {
-          console.log("Lỗi xảy ra khi addMessage", error);
+          console.log("Lỗi addMessage", error);
         }
       },
 
@@ -259,6 +279,50 @@ export const useChatStore = create<ChatState>()(
           set({ imagesPreview: [] });
         } catch (error) {
           console.log("Lỗi xảy ra khi createConversation", error);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      resetMessages: (conversationId) => {
+        set((state) => {
+          return {
+            messages: {
+              ...state.messages,
+              [conversationId]: {
+                items: [],
+                hasMore: false,
+                nextCursor: null,
+              },
+            },
+          };
+        });
+      },
+
+      deleteConversation: async (conversationId) => {
+        try {
+          set({ loading: true });
+          await chatService.deleteConversation(conversationId);
+
+          set((state) => {
+            return {
+              conversations: state.conversations.filter(
+                (convo) => convo._id != conversationId,
+              ),
+              messages: {
+                ...state.messages,
+                [conversationId]: {
+                  items: [],
+                  hasMore: false,
+                  nextCursor: null,
+                },
+              },
+            };
+          });
+
+          set({ loading: false });
+        } catch (error) {
+          console.log("Lỗi xảy ra khi deleteConversation", error);
         } finally {
           set({ loading: false });
         }

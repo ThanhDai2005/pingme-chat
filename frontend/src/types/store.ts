@@ -68,6 +68,8 @@ export interface ChatState {
     name: string,
     memberIds: string[],
   ) => Promise<void>;
+  resetMessages: (conversationId: string) => void;
+  deleteConversation: (conversationId: string) => Promise<void>;
   addImagesPreview: (preview: []) => void;
   filterImagesPreview: (url: string) => void;
   clearImagesPreview: () => void;

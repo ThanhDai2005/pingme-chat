@@ -23,6 +23,7 @@ const MessageInput = ({ selectedConvo }) => {
   const [value, setValue] = useState("");
   const isDark = useThemeStore((state) => state.isDark);
   const [openEmoji, setOpenEmoji] = useState(false);
+  const [sending, setSending] = useState(false);
   const inputRef = useRef(null);
 
   const handleClick = () => {
@@ -84,14 +85,18 @@ const MessageInput = ({ selectedConvo }) => {
   };
 
   const handleEnter = (e) => {
-    if (e.key == "Enter") {
+    if (e.key == "Enter" && sending == false) {
       e.preventDefault();
       sendMessage();
     }
   };
 
   const sendMessage = async () => {
+    if (sending) return;
     if (!value.trim() && imagesPreview.length == 0) return;
+
+    setSending(true);
+
     const currentValue = value;
     setValue("");
     try {
@@ -123,6 +128,8 @@ const MessageInput = ({ selectedConvo }) => {
     } catch (error) {
       console.log(error);
       toast.error("Lỗi xảy ra khi gửi tin nhắn. Bạn hãy thử lại!");
+    } finally {
+      setSending(false); // 🔓 unlock
     }
   };
 
@@ -212,8 +219,8 @@ const MessageInput = ({ selectedConvo }) => {
           </div>
         </div>
         <Button
-          disabled={!value.trim() && imagesPreview.length == 0}
-          className="transition-all bg-gradient-chat hover:shadow-glow hover:scale-105"
+          disabled={sending}
+          className={`transition-all bg-gradient-chat hover:shadow-glow hover:scale-105 ${sending && "opacity-60"}`}
           onClick={sendMessage}
         >
           <Send className="text-white size-4" />

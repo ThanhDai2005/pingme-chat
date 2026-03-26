@@ -38,7 +38,10 @@ export function SignupForm({
     const { firstName, lastName, username, email, password } = data;
 
     const res = await signUp(firstName, lastName, username, email, password);
-    navigate("/signin");
+
+    if (res.message) {
+      navigate("/signin");
+    }
   };
 
   return (

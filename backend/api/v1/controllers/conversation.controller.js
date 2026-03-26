@@ -123,6 +123,7 @@ export const getConversation = async (req, res) => {
 export const getMessages = async (req, res) => {
   try {
     const conversationId = req.params.conversationId;
+    const userId = req.user._id;
 
     // cursor = mốc để phân trang
     const { limit, cursor } = req.query;
@@ -131,8 +132,22 @@ export const getMessages = async (req, res) => {
       conversationId: conversationId,
     };
 
+    const conversation = await Conversation.findOne({
+      _id: conversationId,
+    });
+
+    const userDeletedAt = conversation.deletedAt.get(userId.toString());
+
+    if (userDeletedAt) {
+      query.createdAt = { $gt: userDeletedAt };
+    }
+
+    //  giữ lại những gì đang có trong query.createdAt (ví dụ mốc $gt từ userDeletedAt trước đó) và thêm/gộp thêm điều kiện $lt vào. { $gt: mốc_xóa, $lt: mốc_cursor }
     if (cursor) {
-      query.createdAt = { $lt: new Date(cursor) }; // Nếu có cursor → lấy tin cũ hơn thời điểm đó
+      query.createdAt = {
+        ...query.createdAt,
+        $lt: new Date(cursor),
+      }; // Nếu có cursor → lấy tin cũ hơn thời điểm đó
     }
 
     const message = await Message.find(query)
@@ -161,6 +176,7 @@ export const getMessages = async (req, res) => {
   }
 };
 
+// [PATCH] /api/v1/conversation/:conversationId/seen
 export const getUserConversationForSocketIo = async (userId) => {
   try {
     const conversation = await Conversation.find({
@@ -226,6 +242,45 @@ export const markAsSeen = async (req, res) => {
     });
   } catch (error) {
     console.log("Lỗi khi cập nhật markAsSeen", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
+// [PATCH] /api/v1/conversation/:conversationId/delete
+export const deleteConversation = async (req, res) => {
+  try {
+    const conversationId = req.params.conversationId;
+
+    const userId = req.user._id;
+
+    const existConversation = await Conversation.findOne({
+      _id: conversationId,
+    });
+
+    if (!existConversation) {
+      return res.status(404).json({
+        message: "Conversation không tồn tại",
+      });
+    }
+
+    const conversation = await Conversation.findByIdAndUpdate(
+      {
+        _id: conversationId,
+      },
+      {
+        $set: { [`deletedAt.${userId}`]: new Date() },
+      },
+      { new: true },
+    );
+
+    res.status(200).json({
+      message: "Xóa cuộc hội thoại thành công",
+      conversation: conversation,
+    });
+  } catch (error) {
+    console.log("Lỗi khi xóa conversation", error);
     res.status(500).json({
       message: "Lỗi hệ thống",
     });

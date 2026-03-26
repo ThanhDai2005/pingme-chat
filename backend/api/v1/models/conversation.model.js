@@ -76,24 +76,27 @@ const conversationSchema = mongoose.Schema(
     group: {
       type: groupSchema,
     },
+    lastMessage: {
+      type: lastMessageSchema,
+      default: null,
+    },
     lastMessageAt: {
       type: Date,
     },
-
     seenBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-
-    lastMessage: {
-      type: lastMessageSchema,
-      default: null,
-    },
     unreadCounts: {
       type: Map,
       of: Number,
+      default: {},
+    },
+    deletedAt: {
+      type: Map,
+      of: Date,
       default: {},
     },
   },

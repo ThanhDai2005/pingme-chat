@@ -32,13 +32,28 @@ const NewGroupChatModel = () => {
     }
   };
 
+  const normalize = (str: string) => {
+    return str
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[đĐ]/g, "d")
+      .replace(/[\u0300-\u036f]/g, "");
+  };
+
   const searchFriend =
     search.trim().length > 0
-      ? friendList.filter(
-          (item) =>
-            item.displayName.toLowerCase().includes(search.toLowerCase()) &&
-            !invitedUser.some((invite) => invite._id == item._id),
-        )
+      ? friendList.filter((item) => {
+          const name = normalize(item.displayName);
+          const keyword = normalize(search);
+
+          const words = keyword.split(/\s+/);
+
+          return (
+            words.every((word) => name.includes(word)) &&
+            !invitedUser.some((invite) => invite._id == item._id)
+          );
+        })
       : [];
 
   const handleSelectFriend = (friend) => {

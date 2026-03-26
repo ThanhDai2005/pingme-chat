@@ -12,4 +12,6 @@ router.get("/:conversationId/message", controller.getMessages);
 
 router.patch("/:conversationId/seen", controller.markAsSeen);
 
+router.patch("/:conversationId/delete", controller.deleteConversation);
+
 export default router;
