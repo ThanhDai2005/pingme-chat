@@ -1,6 +1,6 @@
 # 💬 PingMe Chat
 
-A real-time fullstack chat application built with React, Node.js, MongoDB, and Socket.IO.
+**A real-time fullstack chat application built with React, Node.js, MongoDB, and Socket.IO.**
 
 ## 🚀 Features
 
@@ -34,11 +34,12 @@ A real-time fullstack chat application built with React, Node.js, MongoDB, and S
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React + TypeScript + Tailwind CSS + Zustand
-- **Backend:** Node.js + Express.js + MongoDB + Socket.IO
-- **Authentication:** JWT
-- **Media Storage:** Cloudinary
-- **Others:** Axios, multer, Swagger
+- **Frontend**: React + TypeScript + Tailwind CSS + Zustand
+- **Backend**: Node.js + Express.js + Socket.IO
+- **Database**: MongoDB
+- **Authentication**: JWT + HTTP-only Cookies
+- **Email Service**: Nodemailer (OTP Verification)
+- **Media Storage**: Cloudinary
 
 ## 🌐 Getting Started
 
@@ -65,11 +66,14 @@ PORT=3000
 MONGO_URL=your_mongodb_connection
 ACCESS_TOKEN_SECRET=your_secret_key
 
+CLIENT_URL=http://localhost:5173
+
 CLOUD_NAME=your_cloudinary_name
 CLOUD_KEY=your_cloudinary_key
 CLOUD_SECRET=your_cloudinary_secret
 
-CLIENT_URL=http://localhost:5173
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
 ```
 
 Create `.env` in frontend:
