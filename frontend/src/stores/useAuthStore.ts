@@ -11,6 +11,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       user: null,
       loading: false,
+      forgotPasswordLoading: false,
 
       setAccessToken: (accessToken) => {
         set({ accessToken });
@@ -113,6 +114,52 @@ export const useAuthStore = create<AuthState>()(
           console.error(error);
           toast.error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!");
           get().clearState();
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      forgotPassword: async (email) => {
+        try {
+          set({ forgotPasswordLoading: true });
+          const res = await authService.forgotPassword(email);
+
+          return res;
+        } catch (error) {
+          console.log(error);
+          throw error;
+        } finally {
+          set({ forgotPasswordLoading: false });
+        }
+      },
+
+      verifyOtp: async (email, otp) => {
+        try {
+          set({ loading: true });
+          const res = await authService.verifyOtp(email, otp);
+
+          return res;
+        } catch (error) {
+          console.log(error);
+          throw error;
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      resetPassword: async (resetToken, newPassword, confirmPassword) => {
+        try {
+          set({ loading: true });
+          const res = await authService.resetPassword(
+            resetToken,
+            newPassword,
+            confirmPassword,
+          );
+
+          return res;
+        } catch (error) {
+          console.log(error);
+          throw error;
         } finally {
           set({ loading: false });
         }

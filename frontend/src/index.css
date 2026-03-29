@@ -524,3 +524,9 @@
     color: #ffffff;
   }
 }
+
+.bg-not-found {
+  background-image: url("/NotFound.gif");
+  height: 400px;
+  background-position: center;
+}

@@ -1,5 +1,8 @@
 import User from "../models/user.model.js";
 import Session from "../models/session.model.js";
+import ForgotPassword from "../models/forgot-password.model.js";
+import { sendEmail } from "../../../helpers/mailer.js";
+import { forgotPasswordTemplate } from "../../../helpers/forgotPasswordTemplate.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -27,6 +30,16 @@ export const signUp = async (req, res) => {
     if (existUserName) {
       return res.status(400).json({
         message: "username đã tồn tại",
+      });
+    }
+
+    const existEmail = await User.findOne({
+      email: email,
+    });
+
+    if (existEmail) {
+      return res.status(400).json({
+        message: "email đã tồn tại",
       });
     }
 
@@ -98,7 +111,7 @@ export const signIn = async (req, res) => {
     const session = new Session({
       userId: user._id,
       refreshToken: refreshToken,
-      expiresAt: new Date(Date.now() + REFRESH_TOKEN_TIME),
+      expireAt: new Date(Date.now() + REFRESH_TOKEN_TIME),
     });
 
     // trả refresh token về trong cookie
@@ -173,7 +186,7 @@ export const refreshToken = async (req, res) => {
     }
 
     // kiểm tra hết hạn chưa
-    if (session.expiresAt < new Date()) {
+    if (session.expireAt < new Date()) {
       return res.status(401).json({
         message: "Token đã hết hạn",
       });
@@ -193,6 +206,160 @@ export const refreshToken = async (req, res) => {
     });
   } catch (error) {
     console.log("Lỗi khi gọi refreshToken", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
+// [POST] /api/v1/auth/forgot-password
+export const forgotPassword = async (req, res) => {
+  try {
+    const email = req.body.email;
+
+    if (!email) {
+      return res.status(400).json({
+        message: "Không thể thiếu email",
+      });
+    }
+
+    const existEmail = await User.findOne({
+      email: email,
+    });
+
+    if (!existEmail) {
+      return res.status(400).json({
+        message: "email không tồn tại",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await ForgotPassword.deleteMany({ email: email });
+
+    const forgotPassword = new ForgotPassword({
+      email: existEmail.email,
+      otp: otp,
+      expireAt: new Date(Date.now() + 3 * 60 * 1000),
+    });
+
+    await forgotPassword.save();
+
+    await sendEmail(
+      existEmail.email,
+      "Khôi phục mật khẩu",
+      forgotPasswordTemplate(otp),
+    );
+
+    res.status(200).json({
+      message: "Đã gửi OTP về email",
+      email: forgotPassword.email,
+    });
+  } catch (error) {
+    console.log("Lỗi khi gọi forgotPassword", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
+// [POST] /api/v1/auth/verify-otp
+export const verifyOtp = async (req, res) => {
+  try {
+    const { otp, email } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({
+        message: "Thiếu email hoặc OTP",
+      });
+    }
+
+    const existOtp = await ForgotPassword.findOne({
+      email: email,
+      otp: otp,
+    });
+
+    if (!existOtp) {
+      return res.status(400).json({
+        message: "Otp sai hoặc đã hết hạn",
+      });
+    }
+
+    if (existOtp.expireAt < new Date()) {
+      return res.status(400).json({
+        message: "Otp đã hết hạn",
+      });
+    }
+
+    const resetToken = jwt.sign(
+      {
+        email: email,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: "10m",
+      },
+    );
+
+    await ForgotPassword.deleteOne({
+      _id: existOtp._id,
+    });
+
+    res.status(200).json({
+      message: "Mã otp chính xác",
+      resetToken: resetToken,
+    });
+  } catch (error) {
+    console.log("Lỗi khi gọi verifyCode", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
+// [POST] /api/v1/auth/reset-password
+export const resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword, confirmPassword } = req.body;
+
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
+    } catch (err) {
+      return res.status(400).json({
+        message: "Phiên làm việc đã hết hạn. Vui lòng thực hiện lại từ đầu.",
+      });
+    }
+
+    const email = decoded.email;
+
+    if (!newPassword || !confirmPassword) {
+      return res.status(400).json({
+        message: "Thiếu newPassword hoặc confirmPassword",
+      });
+    }
+
+    if (newPassword != confirmPassword) {
+      return res.status(400).json({
+        message: "newPassword khác với confirmPassword",
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await User.findOneAndUpdate(
+      { email: email },
+      {
+        hashedPassword: hashedPassword,
+      },
+      { new: true },
+    );
+
+    res.status(200).json({
+      message: "Đổi mật khẩu thành công",
+    });
+  } catch (error) {
+    console.log("Lỗi khi gọi resetPassword", error);
     res.status(500).json({
       message: "Lỗi hệ thống",
     });

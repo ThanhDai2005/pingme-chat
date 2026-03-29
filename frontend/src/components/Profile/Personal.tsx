@@ -14,7 +14,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useUserStore } from "@/stores/useUserStore";
-import { toast } from "sonner";
 
 const updateProfile = z.object({
   displayName: z.string().min(3, "Tên hiển thị phải có trên 3 ký tự"),

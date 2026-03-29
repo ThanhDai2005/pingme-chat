@@ -1,8 +1,6 @@
 # 💬 PingMe Chat
 
-> A real-time fullstack chat application built with React, Node.js, MongoDB, and Socket.IO.
-
----
+A real-time fullstack chat application built with React, Node.js, MongoDB, and Socket.IO.
 
 ## 🚀 Features
 
@@ -19,6 +17,7 @@
 
 - JWT authentication (access + refresh token)
 - Secure session with HTTP-only cookies
+- Password recovery via OTP (email-based verification)
 
 ### 👥 Social Features
 
@@ -33,8 +32,6 @@
 - File attachments (preview & download)
 - Drag & drop upload
 
----
-
 ## 🛠️ Tech Stack
 
 - **Frontend:** React + TypeScript + Tailwind CSS + Zustand
@@ -43,16 +40,12 @@
 - **Media Storage:** Cloudinary
 - **Others:** Axios, multer, Swagger
 
----
-
 ## 🌐 Getting Started
 
 ### Prerequisites
 
 - Node.js
 - MongoDB
-
----
 
 ### Installation
 
@@ -102,11 +95,9 @@ npm install
 npm run dev
 ```
 
----
-
 ## 📸 Screenshots
 
-### 1.Sign In
+### 1. Sign In
 
 ![Sign In](./frontend/public/signin-chat.png)
 
@@ -114,13 +105,9 @@ npm run dev
 
 ![Chat](./frontend/public/pingme-chat.png)
 
----
-
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to fork and submit a pull request.
-
----
 
 ## 💌 Contact
 
