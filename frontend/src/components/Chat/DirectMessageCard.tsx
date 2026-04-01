@@ -57,6 +57,10 @@ const DirectMessageCard = ({ item }) => {
     lastMessageContent = isMe
       ? `Bạn ${item.lastMessage?.content}`
       : `${otherUser?.userId?.displayName} ${item.lastMessage?.content}`;
+  } else if (item.lastMessage?.content == "đã thu hồi 1 tin nhắn") {
+    lastMessageContent = isMe
+      ? `Bạn ${item.lastMessage?.content}`
+      : `${otherUser?.userId?.displayName} ${item.lastMessage?.content}`;
   } else {
     lastMessageContent = item.lastMessage?.content;
   }
@@ -181,12 +185,12 @@ const DirectMessageCard = ({ item }) => {
             </AlertDialogDescription>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-0 text-[#0064FF] font-semibold hover:!bg-[#F2F2F2] hover:!text-[#0064FF] sm:w-[123px]">
+            <AlertDialogCancel className="border-0 text-[#0064FF] font-semibold hover:!bg-[#F2F2F2] hover:!text-[#0064FF] sm:w-[123px] cursor-pointer">
               Hủy
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => handleDelete(item._id)}
-              className="bg-[#0064FF] hover:bg-[#0057DE]  font-semibold"
+              className="bg-[#0064FF] hover:bg-[#0057DE]  font-semibold cursor-pointer"
             >
               Xóa đoạn chat
             </AlertDialogAction>

@@ -143,7 +143,7 @@ export const useChatStore = create<ChatState>()(
 
           const convoId = message.conversationId;
 
-          let prevItems = messages[convoId]?.items ?? [];
+          const prevItems = messages[convoId]?.items ?? [];
 
           // kiểm tra tin nhắn có bị trùng ko
           const isExist = prevItems.some(
@@ -323,6 +323,58 @@ export const useChatStore = create<ChatState>()(
           set({ loading: false });
         } catch (error) {
           console.log("Lỗi xảy ra khi deleteConversation", error);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      updateMessage: async (messageId, content) => {
+        try {
+          set({ loading: true });
+
+          const res = await chatService.updateMessage(messageId, content);
+        } catch (error) {
+          console.log("Lỗi xảy ra khi updateMessage", error);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      updateMessageSocket: async (message) => {
+        set((state) => {
+          const convoId = message.conversationId;
+
+          const prevItems = state.messages[convoId]?.items ?? [];
+
+          const newItems = prevItems.map((msg) =>
+            msg._id.toString() == message._id.toString()
+              ? {
+                  ...msg,
+                  ...message,
+                }
+              : msg,
+          );
+
+          return {
+            messages: {
+              ...state.messages,
+              [convoId]: {
+                items: newItems,
+                hasMore: state.messages[convoId]?.hasMore,
+                nextCursor: state.messages[convoId]?.nextCursor,
+              },
+            },
+          };
+        });
+      },
+
+      deleteMessage: async (messageId) => {
+        try {
+          set({ loading: true });
+
+          const res = await chatService.deleteMessage(messageId);
+        } catch (error) {
+          console.log("Lỗi xảy ra khi deleteMessage", error);
         } finally {
           set({ loading: false });
         }

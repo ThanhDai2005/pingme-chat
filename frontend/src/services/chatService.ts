@@ -72,6 +72,20 @@ export const chatService = {
     return res.data;
   },
 
+  updateMessage: async (messageId: string, content: string) => {
+    const res = await api.patch(`/message/${messageId}/update`, {
+      content: content,
+    });
+
+    return res.data;
+  },
+
+  deleteMessage: async (messageId: string) => {
+    const res = await api.patch(`/message/${messageId}/delete`);
+
+    return res.data;
+  },
+
   uploadImage: async (formData: FormData) => {
     const res = await api.post("/message/upload", formData);
 

@@ -6,12 +6,14 @@
 
 ### 🌟 Core Functionalities
 
-- Real-time direct and group chat
-- Send text, images, and file attachments
-- Theming: Toggle between Dark and Light mode
-- Infinite scroll message history
-- Seen status and unread message count
-- Online / offline user status
+- **Real-time Messaging:** Direct and group chat
+- **Message Management:** Edit and delete messages with real-time socket synchronization.
+- **Rich Media Support:** Send text, multi-images, and file attachments (preview & download).
+- **Theming:** Toggle between Dark and Light mode.
+- **Advanced Chat Features:**
+  - Infinite scroll message history.
+  - Seen status and unread message count.
+  - Real-time online/offline user status.
 
 ### 🔐 User Authentication
 
@@ -21,16 +23,8 @@
 
 ### 👥 Social Features
 
-- Send / accept / decline friend requests
-- Cancel friend requests
+- Send / cancel / accept / decline friend requests
 - Manage friend list
-
-### 📎 Media & Files
-
-- Upload avatar
-- Multi-image messages
-- File attachments (preview & download)
-- Drag & drop upload
 
 ## 🛠️ Tech Stack
 

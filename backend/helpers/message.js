@@ -47,3 +47,23 @@ export const emitNewMessage = (io, conversation, message) => {
     },
   });
 };
+
+export const emitUpdateMessage = (io, conversation, message) => {
+  io.to(conversation._id.toString()).emit("update-message", {
+    message: message,
+    conversation: {
+      _id: conversation._id,
+      lastMessage: conversation.lastMessage,
+    },
+  });
+};
+
+export const emitDeleteMessage = (io, conversation, message) => {
+  io.to(conversation._id.toString()).emit("delete-message", {
+    message: message,
+    conversation: {
+      _id: conversation._id,
+      lastMessage: conversation.lastMessage,
+    },
+  });
+};

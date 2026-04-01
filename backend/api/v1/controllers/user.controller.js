@@ -61,7 +61,7 @@ export const uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: "Không nhận được ảnh!" });
     }
 
-    const user = await User.findByIdAndUpdate(
+    const user = await User.findOneAndUpdate(
       {
         _id: userId,
       },
@@ -109,7 +109,7 @@ export const updateInfo = async (req, res) => {
       });
     }
 
-    const user = await User.findByIdAndUpdate(
+    const user = await User.findOneAndUpdate(
       {
         _id: userId,
       },

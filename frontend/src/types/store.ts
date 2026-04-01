@@ -78,6 +78,9 @@ export interface ChatState {
   ) => Promise<void>;
   resetMessages: (conversationId: string) => void;
   deleteConversation: (conversationId: string) => Promise<void>;
+  updateMessage: (messageId: string, content: string) => Promise<void>;
+  deleteMessage: (messageId: string) => Promise<void>;
+  updateMessageSocket: (message: Message) => Promise<void>;
   addImagesPreview: (preview: []) => void;
   filterImagesPreview: (url: string) => void;
   clearImagesPreview: () => void;

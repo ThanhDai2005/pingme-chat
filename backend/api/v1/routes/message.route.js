@@ -24,6 +24,10 @@ router.post(
 
 router.post("/group", checkFriendSendGroupMessage, controller.sendGroupMessage);
 
+router.patch("/:messageId/update", controller.updateMessage);
+
+router.patch("/:messageId/delete", controller.deleteMessage);
+
 router.post(
   "/upload",
   upload.array("imgUrl", 10),

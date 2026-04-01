@@ -1,5 +1,7 @@
 import {
+  emitDeleteMessage,
   emitNewMessage,
+  emitUpdateMessage,
   updateConversationAfterCreateMessage,
 } from "../../../helpers/message.js";
 import Conversation from "../models/conversation.model.js";
@@ -100,6 +102,133 @@ export const sendGroupMessage = async (req, res) => {
     });
   } catch (error) {
     console.log("Lỗi khi gửi tin nhắn nhóm", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
+// [PATCH] /api/v1/message/:messageId/update
+export const updateMessage = async (req, res) => {
+  try {
+    const { content } = req.body;
+    const messageId = req.params.messageId;
+    const userId = req.user._id;
+
+    if (!content) {
+      return res.status(400).json({
+        message: "Nội dung không được rỗng",
+      });
+    }
+
+    const messageExist = await Message.findOne({
+      _id: messageId,
+    });
+
+    if (!messageExist) {
+      return res.status(404).json({
+        message: "Không tìm thấy tin nhắn",
+      });
+    }
+
+    if (messageExist.senderId.toString() != userId.toString()) {
+      return res.status(400).json({
+        message: "Chỉ có người gửi tin nhắn này mới được thay đổi",
+      });
+    }
+
+    const message = await Message.findOneAndUpdate(
+      {
+        _id: messageId,
+      },
+      {
+        content: content,
+        isEdit: true,
+      },
+      {
+        new: true,
+      },
+    );
+
+    const conversation = await Conversation.findOneAndUpdate(
+      {
+        _id: message.conversationId,
+      },
+      {
+        $set: {
+          "lastMessage.content": content,
+        },
+      },
+      { new: true },
+    );
+
+    emitUpdateMessage(io, conversation, message);
+
+    res.status(200).json({
+      message: message,
+    });
+  } catch (error) {
+    console.log("Lỗi khi cập nhật tin nhắn", error);
+    res.status(500).json({
+      message: "Lỗi hệ thống",
+    });
+  }
+};
+
+// [PATCH] /api/v1/message/:messageId/delete
+export const deleteMessage = async (req, res) => {
+  try {
+    const messageId = req.params.messageId;
+    const userId = req.user._id;
+
+    const messageExist = await Message.findOne({
+      _id: messageId,
+    });
+
+    if (!messageExist) {
+      return res.status(404).json({
+        message: "Không tìm thấy tin nhắn",
+      });
+    }
+
+    if (messageExist.senderId.toString() != userId.toString()) {
+      return res.status(400).json({
+        message: "Chỉ có người gửi tin nhắn này mới được thu hồi",
+      });
+    }
+
+    const message = await Message.findOneAndUpdate(
+      {
+        _id: messageId,
+      },
+      {
+        isDelete: true,
+      },
+      {
+        new: true,
+      },
+    );
+
+    let conversation = await Conversation.findOne({
+      _id: message.conversationId,
+    });
+
+    const isLastMessage =
+      conversation.lastMessage?.messageId.toString() == message._id.toString();
+
+    if (isLastMessage) {
+      conversation.lastMessage.content = "đã thu hồi 1 tin nhắn";
+
+      await conversation.save();
+    }
+
+    emitDeleteMessage(io, conversation, message);
+
+    res.status(200).json({
+      message: message,
+    });
+  } catch (error) {
+    console.log("Lỗi khi xoá tin nhắn", error);
     res.status(500).json({
       message: "Lỗi hệ thống",
     });

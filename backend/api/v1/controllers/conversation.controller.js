@@ -220,7 +220,7 @@ export const markAsSeen = async (req, res) => {
       });
     }
 
-    const updated = await Conversation.findByIdAndUpdate(
+    const updated = await Conversation.findOneAndUpdate(
       {
         _id: conversationId,
       },
@@ -265,7 +265,7 @@ export const deleteConversation = async (req, res) => {
       });
     }
 
-    const conversation = await Conversation.findByIdAndUpdate(
+    const conversation = await Conversation.findOneAndUpdate(
       {
         _id: conversationId,
       },

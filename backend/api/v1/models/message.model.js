@@ -17,6 +17,14 @@ const messageSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
     imgUrl: [
       {
         url: String,
