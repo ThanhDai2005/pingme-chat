@@ -176,7 +176,6 @@ export const getMessages = async (req, res) => {
   }
 };
 
-// [PATCH] /api/v1/conversation/:conversationId/seen
 export const getUserConversationForSocketIo = async (userId) => {
   try {
     const conversation = await Conversation.find({
@@ -190,6 +189,7 @@ export const getUserConversationForSocketIo = async (userId) => {
   }
 };
 
+// [PATCH] /api/v1/conversation/:conversationId/seen
 export const markAsSeen = async (req, res) => {
   try {
     const conversationId = req.params.conversationId;

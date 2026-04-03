@@ -12,6 +12,7 @@ export const useChatStore = create<ChatState>()(
       messages: {},
       activeConversationId: null,
       imagesPreview: [],
+      typingUsers: {},
       convoLoading: false,
       messageLoading: false,
       loading: false,
@@ -402,6 +403,34 @@ export const useChatStore = create<ChatState>()(
         set((state) => {
           return {
             imagesPreview: [],
+          };
+        });
+      },
+
+      setTyping: (conversationId, userId) => {
+        set((state) => {
+          const current = state.typingUsers[conversationId] || [];
+
+          return {
+            typingUsers: {
+              ...state.typingUsers,
+              [conversationId]: current.includes(userId)
+                ? current
+                : [...current, userId],
+            },
+          };
+        });
+      },
+
+      removeTyping: (conversationId, userId) => {
+        set((state) => {
+          const current = state.typingUsers[conversationId] || [];
+
+          return {
+            typingUsers: {
+              ...state.typingUsers,
+              [conversationId]: current.filter((item) => item != userId),
+            },
           };
         });
       },

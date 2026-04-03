@@ -36,6 +36,20 @@ export const initSocket = (server) => {
     // Giúp Server có thể gửi tin nhắn/thông báo riêng cho user này từ bất cứ đâu bằng lệnh io.to(userId).
     socket.join(user._id.toString());
 
+    socket.on("typing", ({ conversationId }) => {
+      socket.to(conversationId).emit("user-typing", {
+        userId: socket.user._id,
+        conversationId: conversationId,
+      });
+    });
+
+    socket.on("stop-typing", ({ conversationId }) => {
+      socket.to(conversationId).emit("user-stop-typing", {
+        userId: socket.user._id,
+        conversationId: conversationId,
+      });
+    });
+
     socket.on("disconnect", () => {
       onlineUsers.delete(user._id.toString());
       io.emit("online-users", Array.from(onlineUsers.keys()));

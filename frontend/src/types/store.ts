@@ -49,6 +49,7 @@ export interface ChatState {
   >;
   activeConversationId: string | null;
   imagesPreview: [];
+  typingUsers: Record<string, string[]>;
   convoLoading: boolean;
   messageLoading: boolean;
   loading: boolean;
@@ -80,10 +81,12 @@ export interface ChatState {
   deleteConversation: (conversationId: string) => Promise<void>;
   updateMessage: (messageId: string, content: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
-  updateMessageSocket: (message: Message) => Promise<void>;
+  updateMessageSocket: (message: Message) => void;
   addImagesPreview: (preview: []) => void;
   filterImagesPreview: (url: string) => void;
   clearImagesPreview: () => void;
+  setTyping: (conversationId: string, userId: string) => void;
+  removeTyping: (conversationId: string, userId: string) => void;
 }
 
 export interface SocketState {

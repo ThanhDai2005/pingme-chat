@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>()(
           await get().getDetail();
           useChatStore.getState().getListConversation();
 
-          toast.success("Chào mừng bạn quay lại với Moji 🎉");
+          toast.success("Chào mừng bạn quay lại với PingMe 🎉");
           return res;
         } catch (error) {
           console.error(error);

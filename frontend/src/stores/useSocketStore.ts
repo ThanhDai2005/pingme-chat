@@ -90,6 +90,14 @@ export const useSocketStore = create<SocketState>((set, get) => ({
         lastMessage: conversation.lastMessage,
       });
     });
+
+    socket.on("user-typing", ({ userId, conversationId }) => {
+      useChatStore.getState().setTyping(conversationId, userId);
+    });
+
+    socket.on("user-stop-typing", ({ userId, conversationId }) => {
+      useChatStore.getState().removeTyping(conversationId, userId);
+    });
   },
 
   disconnectSocket: () => {

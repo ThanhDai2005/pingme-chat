@@ -8,6 +8,7 @@ import EmojiPicker from "emoji-picker-react";
 import { useThemeStore } from "@/stores/useThemeStore";
 import { toast } from "sonner";
 import { chatService } from "@/services/chatService";
+import { useSocketStore } from "@/stores/useSocketStore";
 
 const MessageInput = ({ selectedConvo }) => {
   const {
@@ -19,12 +20,36 @@ const MessageInput = ({ selectedConvo }) => {
     clearImagesPreview,
   } = useChatStore();
   const user = useAuthStore((state) => state.user);
+  const socket = useSocketStore((state) => state.socket);
 
   const [value, setValue] = useState("");
   const isDark = useThemeStore((state) => state.isDark);
   const [openEmoji, setOpenEmoji] = useState(false);
   const [sending, setSending] = useState(false);
   const inputRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+
+  const handleTyping = (e) => {
+    setValue(e.target.value);
+
+    if (!socket || !selectedConvo?._id) return;
+
+    socket.emit("typing", {
+      conversationId: selectedConvo._id,
+    });
+
+    // Nếu người dùng vẫn đang gõ, hủy bỏ lệnh "ngừng gõ" cũ để đặt lại cái mới
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Hẹn giờ: Sau 2 giây nếu không gõ thêm gì thì mới báo là "đã ngừng gõ"
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stop-typing", {
+        conversationId: selectedConvo._id,
+      });
+    }, 2000);
+  };
 
   const handleClick = () => {
     if (inputRef.current) {
@@ -92,6 +117,11 @@ const MessageInput = ({ selectedConvo }) => {
   };
 
   const sendMessage = async () => {
+    if (!socket || !selectedConvo?._id) return;
+    socket.emit("stop-typing", {
+      conversationId: selectedConvo._id,
+    });
+
     if (sending) return;
     if (!value.trim() && imagesPreview.length == 0) return;
 
@@ -129,7 +159,7 @@ const MessageInput = ({ selectedConvo }) => {
       console.log(error);
       toast.error("Lỗi xảy ra khi gửi tin nhắn. Bạn hãy thử lại!");
     } finally {
-      setSending(false); // 🔓 unlock
+      setSending(false);
     }
   };
 
@@ -202,7 +232,7 @@ const MessageInput = ({ selectedConvo }) => {
             placeholder="Soạn tin nhắn ..."
             name="content"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={handleTyping}
             onPaste={handlePaste}
             onKeyDown={handleEnter}
             className="pr-20 transition-all bg-white border h-9 border-border/50 focus:border-primary/50"

@@ -2,10 +2,16 @@ import { useChatStore } from "@/stores/useChatStore";
 import MessageItem from "./MessageItem";
 import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import AvatarUser from "./UserAvatar";
 
 const ChatWindowBody = () => {
-  const { activeConversationId, conversations, messages, getMessages } =
-    useChatStore();
+  const {
+    activeConversationId,
+    conversations,
+    messages,
+    getMessages,
+    typingUsers,
+  } = useChatStore();
   const [lastMessageStatus, setLastMessageStatus] = useState("sent");
   const scrollRef = useRef(null);
   const containerRef = useRef(null);
@@ -16,6 +22,10 @@ const ChatWindowBody = () => {
   const hasMore = messages[activeConversationId]?.hasMore ?? false;
   const selectedConvo = conversations.find(
     (convo) => convo._id == activeConversationId,
+  );
+  const typingList = typingUsers[activeConversationId] || [];
+  const typingUsersInfo = selectedConvo?.participants.filter((p) =>
+    typingList.includes(p.userId._id),
   );
 
   useEffect(() => {
@@ -106,6 +116,29 @@ const ChatWindowBody = () => {
             overflow: "visible",
           }}
         >
+          {typingList.length > 0 && (
+            <div className="flex items-center gap-2 mt-2">
+              <div
+                className={`{ ${typingList.length > 1 ? "flex items-center gap-1" : "w-8"}`}
+              >
+                {typingUsersInfo?.map((item) => (
+                  <AvatarUser
+                    type={"chat"}
+                    name={item?.userId.displayName}
+                    avatarUrl={item?.userId.avatarUrl ?? null}
+                  />
+                ))}
+              </div>
+
+              <div className="px-3 py-[10px] chat-bubble-received rounded-full w-fit">
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-gray-500 dark:bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                  <span className="w-1.5 h-1.5 bg-gray-500 dark:bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-1.5 h-1.5 bg-gray-500 dark:bg-gray-400 rounded-full animate-bounce"></span>
+                </div>
+              </div>
+            </div>
+          )}
           {reverseMessageList.map((mess, index) => (
             <MessageItem
               key={mess?._id}
