@@ -121,3 +121,13 @@ export interface UserState {
     bio?: string,
   ) => Promise<void>;
 }
+
+export interface NotificationState {
+  fcmToken: string | null;
+  permissionGranted: boolean;
+  loading: boolean;
+
+  requestPermission: () => Promise<void>;
+  saveFcmToken: (token: string) => Promise<void>;
+  removeFcmToken: () => Promise<void>;
+}

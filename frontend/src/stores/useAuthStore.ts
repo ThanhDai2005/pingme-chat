@@ -4,6 +4,7 @@ import { authService } from "@/services/authService";
 import type { AuthState } from "@/types/store";
 import { persist } from "zustand/middleware";
 import { useChatStore } from "./useChatStore";
+import { useNotificationStore } from "./useNotificationStore";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -24,6 +25,7 @@ export const useAuthStore = create<AuthState>()(
       clearState: () => {
         set({ accessToken: null, user: null, loading: false });
         useChatStore.getState().reset();
+        useNotificationStore.getState().removeFcmToken();
         localStorage.clear();
         sessionStorage.clear();
       },
@@ -103,7 +105,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           set({ loading: true });
           const { user, getDetail, setAccessToken } = get();
-          const accessToken = await authService.refresh();
+          const { accessToken } = await authService.refresh();
 
           setAccessToken(accessToken);
 

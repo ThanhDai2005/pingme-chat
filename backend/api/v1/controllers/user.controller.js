@@ -136,3 +136,44 @@ export const updateInfo = async (req, res) => {
     });
   }
 };
+
+// [PATCH] /api/v1/user/fcm-token
+export const saveFcmToken = async (req, res) => {
+  try {
+    const { fcmToken } = req.body;
+    const userId = req.user._id;
+
+    if (!fcmToken) {
+      return res.status(400).json({ message: "Thiếu fcmToken" });
+    }
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { fcmToken: fcmToken },
+      { new: true },
+    );
+
+    res.status(200).json({ message: "Lưu FCM token thành công" });
+  } catch (error) {
+    console.log("Lỗi khi lưu FCM token", error);
+    res.status(500).json({ message: "Lỗi hệ thống" });
+  }
+};
+
+// [DELETE] /api/v1/user/fcm-token
+export const removeFcmToken = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { fcmToken: null },
+      { new: true },
+    );
+
+    res.status(200).json({ message: "Xóa FCM token thành công" });
+  } catch (error) {
+    console.log("Lỗi khi xóa FCM token", error);
+    res.status(500).json({ message: "Lỗi hệ thống" });
+  }
+};

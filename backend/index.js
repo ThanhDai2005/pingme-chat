@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 dotenv.config();
 import connect from "./config/database.js";
+import connectFirebase from "./config/firebase.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
@@ -12,6 +13,8 @@ import { mainV1Routes } from "./api/v1/routes/index.route.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+connectFirebase();
 
 app.use(
   cors({

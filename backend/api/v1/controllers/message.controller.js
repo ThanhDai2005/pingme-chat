@@ -3,6 +3,7 @@ import {
   emitNewMessage,
   emitUpdateMessage,
   updateConversationAfterCreateMessage,
+  sendPushNotificationForMessage,
 } from "../../../helpers/message.js";
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
@@ -58,6 +59,15 @@ export const sendDirectMessage = async (req, res) => {
 
     emitNewMessage(io, conversation, message);
 
+    // Gửi push notification cho các user offline
+    sendPushNotificationForMessage(
+      io,
+      conversation,
+      message,
+      userId,
+      req.user.displayName,
+    );
+
     res.status(201).json({
       message: message,
     });
@@ -96,6 +106,15 @@ export const sendGroupMessage = async (req, res) => {
     await conversation.save();
 
     emitNewMessage(io, conversation, message);
+
+    // Gửi push notification cho các user offline
+    sendPushNotificationForMessage(
+      io,
+      conversation,
+      message,
+      userId,
+      req.user.displayName,
+    );
 
     res.status(201).json({
       message: message,

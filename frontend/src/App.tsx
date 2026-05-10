@@ -5,26 +5,35 @@ import { useThemeStore } from "./stores/useThemeStore";
 import { useEffect } from "react";
 import { useAuthStore } from "./stores/useAuthStore";
 import { useSocketStore } from "./stores/useSocketStore";
+import { useNotificationStore } from "./stores/useNotificationStore";
 
 function App() {
   const { isDark, setTheme } = useThemeStore();
   const accessToken = useAuthStore((state) => state.accessToken);
   const { connectSocket, disconnectSocket } = useSocketStore();
+  const { requestPermission } = useNotificationStore();
 
-  // useEffect chỉ làm nhiệm vụ đồng bộ UI theo state isDark
+  // Sync dark/light theme
   useEffect(() => {
     setTheme(isDark);
   }, [isDark]);
 
-  // Khi user đã đăng nhập (có accessToken) → kết nối socket
-  // Khi user đăng xuất accessToken = null → ngắt kết nối socket
+  // Khi user đã đăng nhập → kết nối socket + setup notifications
+  // Khi user đăng xuất → ngắt kết nối
   useEffect(() => {
     if (accessToken) {
       connectSocket();
+
+      // Yêu cầu quyền notification và lấy FCM token
+      requestPermission();
+
+      return () => {
+        disconnectSocket();
+      };
     }
 
     return () => disconnectSocket();
-  }, [accessToken]);
+  }, [accessToken, connectSocket, disconnectSocket, requestPermission]);
 
   return (
     <>

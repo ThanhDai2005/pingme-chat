@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       sparse: true, // cho phép null, nhưng không được trùng
     },
+    fcmToken: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true },
 );

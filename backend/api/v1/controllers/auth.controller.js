@@ -295,7 +295,7 @@ export const verifyOtp = async (req, res) => {
       {
         email: email,
       },
-      process.env.ACCESS_TOKEN_SECRET,
+      process.env.RESET_TOKEN_SECRET,
       {
         expiresIn: "10m",
       },
@@ -324,7 +324,7 @@ export const resetPassword = async (req, res) => {
 
     let decoded;
     try {
-      decoded = jwt.verify(resetToken, process.env.ACCESS_TOKEN_SECRET);
+      decoded = jwt.verify(resetToken, process.env.RESET_TOKEN_SECRET);
     } catch (err) {
       return res.status(400).json({
         message: "Phiên làm việc đã hết hạn. Vui lòng thực hiện lại từ đầu.",
@@ -347,13 +347,15 @@ export const resetPassword = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await User.findOneAndUpdate(
+    const user = await User.findOneAndUpdate(
       { email: email },
       {
         hashedPassword: hashedPassword,
       },
       { new: true },
     );
+
+    await Session.deleteMany({ _id: user._id });
 
     res.status(200).json({
       message: "Đổi mật khẩu thành công",

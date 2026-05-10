@@ -70,8 +70,12 @@ export const useChatStore = create<ChatState>()(
             const prev = state.messages[convoId]?.items ?? [];
             // Nếu đã có tin nhắn trong state: Nối tin cũ (vừa load từ DB) lên ĐẦU danh sách hiện tại.
             // Nếu state đang trống: Gán luôn danh sách vừa tải về làm dữ liệu ban đầu.
-            const merged =
+            const mergedRaw =
               prev.length > 0 ? [...processed, ...prev] : processed;
+
+            const merged = Array.from(
+              new Map(mergedRaw.map((m) => [m._id.toString(), m])).values(),
+            );
             return {
               messages: {
                 ...state.messages,

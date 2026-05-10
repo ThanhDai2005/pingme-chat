@@ -53,11 +53,16 @@ const MessageItem = ({
   const prev =
     index + 1 < messageList.length ? messageList[index + 1] : undefined;
 
-  const chatBreak =
+  const chatBreakAvatar =
     index == messageList.length - 1 ||
     mess?.senderId != prev?.senderId ||
     new Date(mess?.createdAt).getTime() - new Date(prev?.createdAt).getTime() >
       300000; // tách nhóm tin nhắn khi nằm trong 3 điều kiện trên để thêm lại avatar và time
+
+  const chatBreakTime =
+    index == messageList.length - 1 ||
+    new Date(mess?.createdAt).getTime() - new Date(prev?.createdAt).getTime() >
+      900000;
 
   const participant = selectedConvo.participants.find(
     (item) => item.userId._id == mess.senderId,
@@ -130,7 +135,7 @@ const MessageItem = ({
         >
           {!mess.isOwn && (
             <div className="w-8">
-              {chatBreak && (
+              {chatBreakAvatar && (
                 <AvatarUser
                   type={"chat"}
                   name={participant?.userId.displayName}
@@ -157,7 +162,7 @@ const MessageItem = ({
                       <TooltipTrigger asChild>
                         <DropdownMenuTrigger asChild>
                           <div className="size-6 bg-[#F2F2F2] rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200">
-                            <MoreVertical className="size-4" />
+                            <MoreVertical className="size-4 dark:text-black" />
                           </div>
                         </DropdownMenuTrigger>
                       </TooltipTrigger>
@@ -216,7 +221,7 @@ const MessageItem = ({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="size-6 bg-[#F2F2F2] rounded-full flex items-center justify-center cursor-pointer hover:bg-gray-200">
-                        <Smile className="size-4" />
+                        <Smile className="size-4 dark:text-black" />
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>Bày tỏ cảm xúc</TooltipContent>
@@ -224,136 +229,151 @@ const MessageItem = ({
                 </div>
               )}
 
-              <div
-                className={`flex flex-col ${mess.isOwn ? "items-end" : "items-start"} max-w-full`}
-              >
-                {mess.isDelete ? (
-                  <>
-                    <Card className="p-3 bg-white border max-w-fit ">
-                      <p className="text-sm text-[#65686C] italic leading-relaxed break-words">
-                        {contentDelete}
-                      </p>
-                    </Card>
-                  </>
-                ) : (
-                  <>
-                    {mess.content && (
-                      <Card
-                        className={`p-3 max-w-fit ${
-                          mess.isOwn
-                            ? "chat-bubble-sent"
-                            : "chat-bubble-received"
-                        }`}
-                      >
-                        {editingId == mess._id ? (
-                          <div className="flex items-center justify-between gap-1">
-                            <input
-                              value={content}
-                              onChange={(e) => setContent(e.target.value)}
-                              onKeyDown={handleEnter}
-                              className="px-2 py-1 text-sm border rounded"
-                            />
-
-                            <Button
-                              disabled={content == mess.content}
-                              onClick={() => handleUpdateMessage(mess._id)}
-                            >
-                              <Send className="text-white size-4" />
-                            </Button>
-
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => setEditingId(null)}
-                            >
-                              ✕
-                            </Button>
-                          </div>
-                        ) : (
-                          <p className="text-sm leading-relaxed break-words">
-                            {mess.content}
-                          </p>
-                        )}
-                      </Card>
-                    )}
-
-                    {mess.imgUrl?.length > 0 && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div
+                    className={`flex flex-col ${mess.isOwn ? "items-end" : "items-start"} max-w-full`}
+                  >
+                    {mess.isDelete ? (
                       <>
-                        {mess.imgUrl.filter((item) => item.fileType == "image")
-                          .length > 0 && (
-                          <div
-                            ref={images}
-                            className={`grid gap-1 my-1
-                    ${
-                      mess.imgUrl.filter((item) => item.fileType === "image")
-                        .length == 1
-                        ? "grid-cols-1"
-                        : mess.imgUrl.filter((item) => item.fileType == "image")
-                              .length <= 4
-                          ? "grid-cols-2"
-                          : "grid-cols-3"
-                    }`}
+                        <Card className="p-3 bg-white dark:bg-transparent dark:border-[#4C4C4D] border max-w-fit">
+                          <p className="text-sm text-[#65686C] dark:text-[#B0B3B8] italic leading-relaxed break-words">
+                            {contentDelete}
+                          </p>
+                        </Card>
+                      </>
+                    ) : (
+                      <>
+                        {mess.content && (
+                          <Card
+                            className={`p-3 max-w-fit ${
+                              mess.isOwn
+                                ? "chat-bubble-sent"
+                                : "chat-bubble-received"
+                            }`}
                           >
-                            {mess.imgUrl
-                              .filter((item) => item.fileType == "image")
-                              .map((item, index) => (
-                                <div
-                                  key={index}
-                                  className="my-1 overflow-hidden rounded-lg cursor-pointer"
+                            {editingId == mess._id ? (
+                              <div className="flex items-center justify-between gap-1">
+                                <input
+                                  value={content}
+                                  onChange={(e) => setContent(e.target.value)}
+                                  onKeyDown={handleEnter}
+                                  className="px-2 py-1 text-sm border rounded"
+                                />
+
+                                <Button
+                                  disabled={content == mess.content}
+                                  onClick={() => handleUpdateMessage(mess._id)}
                                 >
-                                  <img
-                                    src={item.url}
-                                    className="object-cover w-full h-full transition hover:opacity-90"
-                                  />
-                                </div>
-                              ))}
-                          </div>
+                                  <Send className="text-white size-4" />
+                                </Button>
+
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => setEditingId(null)}
+                                >
+                                  ✕
+                                </Button>
+                              </div>
+                            ) : (
+                              <p className="text-sm leading-relaxed break-words">
+                                {mess.content}
+                              </p>
+                            )}
+                          </Card>
                         )}
 
-                        {mess.imgUrl.filter((item) => item.fileType != "image")
-                          .length > 0 && (
-                          <div className="flex flex-col gap-1 my-1">
-                            {mess.imgUrl
-                              .filter((item) => item.fileType != "image")
-                              .map((item, index) => (
-                                <div key={index}>
-                                  {item.fileType == "video" && (
-                                    <div className="overflow-hidden rounded-2xl max-w-[250px] shadow-sm dark:shadow-2xl">
-                                      <video
+                        {mess.imgUrl?.length > 0 && (
+                          <>
+                            {mess.imgUrl.filter(
+                              (item) => item.fileType == "image",
+                            ).length > 0 && (
+                              <div
+                                ref={images}
+                                className={`grid gap-1 my-1
+                                ${
+                                  mess.imgUrl.filter(
+                                    (item) => item.fileType == "image",
+                                  ).length == 1
+                                    ? "grid-cols-1"
+                                    : mess.imgUrl.filter(
+                                          (item) => item.fileType == "image",
+                                        ).length <= 4
+                                      ? "grid-cols-2"
+                                      : "grid-cols-3"
+                                }`}
+                              >
+                                {mess.imgUrl
+                                  .filter((item) => item.fileType == "image")
+                                  .map((item, index) => (
+                                    <div
+                                      key={index}
+                                      className="my-1 overflow-hidden rounded-lg cursor-pointer"
+                                    >
+                                      <img
                                         src={item.url}
-                                        controls
-                                        className="w-full h-auto max-h-[300px]"
+                                        className="object-cover w-full h-full transition hover:opacity-90"
                                       />
                                     </div>
-                                  )}
+                                  ))}
+                              </div>
+                            )}
 
-                                  {item.fileType == "file" && (
-                                    <div className="flex items-center gap-3 px-3 py-2 bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-xl max-w-[280px] shadow-sm">
-                                      <div className="flex items-center justify-center bg-white rounded-full shadow-sm size-10 shrink-0">
-                                        <FileText className="text-black size-5" />
-                                      </div>
+                            {mess.imgUrl.filter(
+                              (item) => item.fileType != "image",
+                            ).length > 0 && (
+                              <div className="flex flex-col gap-1 my-1">
+                                {mess.imgUrl
+                                  .filter((item) => item.fileType != "image")
+                                  .map((item, index) => (
+                                    <div key={index}>
+                                      {item.fileType == "video" && (
+                                        <div className="overflow-hidden rounded-2xl max-w-[250px] shadow-sm dark:shadow-2xl">
+                                          <video
+                                            src={item.url}
+                                            controls
+                                            className="w-full h-auto max-h-[300px]"
+                                          />
+                                        </div>
+                                      )}
 
-                                      <div className="flex-1 text-sm font-medium break-words line-clamp-3">
-                                        {item.name}
-                                      </div>
+                                      {item.fileType == "file" && (
+                                        <div className="flex items-center gap-3 px-3 py-2 bg-[#E4E6EB] dark:bg-[#3A3B3C] rounded-xl max-w-[280px] shadow-sm">
+                                          <div className="flex items-center justify-center bg-white rounded-full shadow-sm size-10 shrink-0">
+                                            <FileText className="text-black size-5" />
+                                          </div>
 
-                                      <button
-                                        onClick={() => handleDownload(item)}
-                                        className="p-2 ml-2 transition-all rounded-full hover:bg-white/50 "
-                                      >
-                                        <Download className="text-gray-600 dark:text-current size-4" />
-                                      </button>
+                                          <div className="flex-1 text-sm font-medium break-words line-clamp-3">
+                                            {item.name}
+                                          </div>
+
+                                          <button
+                                            onClick={() => handleDownload(item)}
+                                            className="p-2 ml-2 transition-all rounded-full hover:bg-white/50 "
+                                          >
+                                            <Download className="text-gray-600 dark:text-current size-4" />
+                                          </button>
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
-                                </div>
-                              ))}
-                          </div>
+                                  ))}
+                              </div>
+                            )}
+                          </>
                         )}
                       </>
                     )}
-                  </>
-                )}
-              </div>
+                  </div>
+                </TooltipTrigger>
+
+                <TooltipContent
+                  side={mess.isOwn ? "left" : "right"}
+                  sideOffset={10}
+                >
+                  {formatMessageTime(new Date(mess.createdAt))}
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             {mess.isOwn &&
@@ -368,7 +388,7 @@ const MessageItem = ({
           </div>
         </div>
 
-        {chatBreak && (
+        {chatBreakTime && (
           <span className="flex justify-center px-1 text-xs text-muted-foreground">
             {formatMessageTime(new Date(mess.createdAt))}
           </span>

@@ -22,4 +22,8 @@ router.patch(
 
 router.patch("/profile", controller.updateInfo);
 
+router.patch("/fcm-token", controller.saveFcmToken);
+
+router.delete("/fcm-token", controller.removeFcmToken);
+
 export default router;
