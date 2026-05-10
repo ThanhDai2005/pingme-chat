@@ -7,6 +7,7 @@
 ### 🌟 Core Functionalities
 
 - **Real-time Messaging:** Direct and group chat
+- **Push Notifications:** Receive notifications for new messages even when users are offline (via Firebase Cloud Messaging).
 - **Message Management:** Edit and delete messages with real-time socket synchronization.
 - **Rich Media Support:** Send text, multi-images, and file attachments (preview & download).
 - **Theming:** Toggle between Dark and Light mode.
@@ -32,6 +33,7 @@
 - **Backend**: Node.js + Express.js + Socket.IO
 - **Database**: MongoDB
 - **Authentication**: JWT + HTTP-only Cookies
+- **Push Notification:** Firebase Cloud Messaging (FCM)
 - **Email Service**: Nodemailer (OTP Verification)
 - **Media Storage**: Cloudinary
 
@@ -58,7 +60,9 @@ Create `.env` in backend:
 ```env
 PORT=3000
 MONGO_URL=your_mongodb_connection
+
 ACCESS_TOKEN_SECRET=your_secret_key
+RESET_TOKEN_SECRET=your_reset_secret
 
 CLIENT_URL=http://localhost:5173
 
@@ -68,6 +72,10 @@ CLOUD_SECRET=your_cloudinary_secret
 
 EMAIL_USER=your_email@gmail.com
 EMAIL_PASS=your_app_password
+
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_PRIVATE_KEY=your_private_key
 ```
 
 Create `.env` in frontend:
